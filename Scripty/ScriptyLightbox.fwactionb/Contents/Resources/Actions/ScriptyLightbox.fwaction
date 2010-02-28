@@ -1,0 +1,385 @@
+﻿<library-action name="scriptyHandlerFunctions">
+<action-javascript>
+	//mandatory -- set this to true in any action that uses the prototype/scriptaculous stack
+	var scripty = true;
+	//set this to true in order to load the un-packed versions of the libraries
+	var debug = false;
+	function in_array(theArray,search_term) {
+		var i = theArray.length;
+		if (i > 0) {
+			do {
+				if (theArray[i] === search_term) {
+					return true;
+				}
+			} while (i--);
+		}
+		return false;
+	}
+	function checkForUpdates(actionId,actionVersion){
+	//example: action-button name="checkUpdates" label="Check for Updates" onClick=checkForUpdates(1,1.4)
+		if(fwLaunchURL) {
+			fwLaunchURL('http://actionsforge.com/actions/' + actionId + '/version/' + actionVersion);
+		}else{
+			var osa=new FWOSAInterpreter; 
+			osa.fwWrite('open location "http://actionsforge.com/actions/' + actionId + '/version/' + actionVersion + '"'); 
+			osa.fwCompile(); 
+			osa.fwRun(); 
+		}
+	}
+	
+	function GetPageDiv(){
+		var divs = fwDocument.fwTags.fwFindAll('div');
+		for (i in divs){
+			if (divs[i] && divs[i].id && divs[i].id.toString() == '"PageDiv"') return divs[i];
+		}
+		return false;
+	}
+
+	function AddLibraryScript(theTag, theLibraryName)
+	{
+		var scriptTag = theTag.fwAddJavaScript();
+		var theMarkup = fwMarkups[theLibraryName];
+		theMarkup.fwConvertLineEndings = true;
+		scriptTag.fwAddRaw(theMarkup);
+		theTag.fwAddRawln('');
+	}
+
+	function AddObserver(theTag, theElement, theObject, theEvent)
+	{
+		var scriptTag = theTag.fwAddJavaScript();
+		if(theObject != 'document') theObject = '$(' + fwQuote(theObject,"'") +')';
+		var theMarkup = fwMarkups['list'].toString();
+		var loading = fwParameters.indicator.toString();
+		var path = '';
+		var img = '<table cellspacing="0" style="width:100%; height:100%;"><tr><td style="valign:middle; text-align:center"><img src="path" width="wd" height="hg" alt="Loading..." ';
+		img += (fwPage.fwHTMLLevel > 3) ? '/>' : '>';
+		img += '</td></tr></table>';
+		switch (loading){
+			case 'spinner':
+				path = AddFile('spinner',false);
+				loading = img.replace(/path/,path).replace(/(wd|hg)/g,16);
+			break;
+			case 'loading':
+				path = AddFile('loading',false);
+				loading = img.replace(/path/,path).replace(/(wd|hg)/g,32);
+			break;
+			default:
+			loading = 'Loading...';
+			break;
+		}
+		theMarkup = theMarkup.replace(/div/g,theElement);
+		theMarkup = theMarkup.replace(/path/,fwParameters.path.toString());
+		theMarkup = theMarkup.replace(/message/,loading);
+		theMarkup.fwConvertLineEndings = true;
+		if(theObject != 'document') scriptTag.fwAddRawln("document.observe('dom:loaded',function(){");
+		scriptTag.fwAddRaw(theObject + '.observe(');
+		scriptTag.fwAddRaw(fwQuote(theEvent,"'") + ', ');
+		scriptTag.fwAddRawln('function(evt){');
+		scriptTag.fwAddRaw(theMarkup);
+		scriptTag.fwAddRawln('');
+		scriptTag.fwAddRawln('});');
+		if(theObject != 'document') scriptTag.fwAddRawln('});');
+		theTag.fwAddRawln('');
+	}
+
+	function lastOrders(){
+		var actions = fwPage.fwFindAllActions();
+		var scripties = new Array();
+		for (i in actions){
+			if (actions[i].scripty == true) scripties.push(actions[i]);
+		}
+		return this === scripties[scripties.length -1];
+	}
+
+	function LinkFileToHead(theTag, file, options)
+	{
+		if(!fwPage.linkedFiles) fwPage['linkedFiles'] = [];
+		if(!in_array(fwPage.linkedFiles,file)){
+			fwPage.linkedFiles.push(file);
+			var options = options || {'type': 'text/javascript','charset':'utf-8'};
+			if (options['type'] && options['type'] == 'text/javascript') {
+				var scriptTag = theTag.fwAdd("script", true);
+				scriptTag.src='"'+file+'"';
+			}else{
+				var scriptTag = theTag.fwAdd("link",false);
+				scriptTag.href='"'+file+'"';
+			}
+			for(var i in options){
+				scriptTag[i] = fwQuote(options[i]);
+			}
+			scriptTag.fwAddRawln('');
+			theTag.fwAddRawln('');
+		}
+	}
+	
+	function AddFile(fileName, addLinkToHead)
+	{
+		var path = this.fwPathName;
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		myFile = new FWFile;
+		if(!myFile.fwOpenRead(prefix + fileName + '.js')){
+			myFile.fwOpenRead(prefix + fileName + '.gif');
+		}
+		myFile.fwClose();
+		if (fwParameters[fileName]) {
+			fwParameters[fileName].fwSpecify(myFile);
+			var path = fwParameters[fileName].toString();
+		}else{
+			alert (file + ' was not found in the action bundle');
+		}
+		if(addLinkToHead){
+			var theHead = fwDocument.fwTags.fwFind("head");
+			LinkFileToHead(theHead, fileName);
+		}
+		return fwParameters[fileName].fwValue;
+	}
+
+
+	function AddFiles(filesString, addLinks, replacements)
+	{
+		var replacements = replacements || {};
+		var useCustom = filesString && filesString.length > 0;
+		var path = this.fwPathName;
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		var canon = 'prototype1602packer,scriptaculous181packer,prototype1602,scriptaculous181'.split(',');
+		var files = (useCustom) ? filesString.split(',') : canon;
+		if(!fwPage.libsList) fwPage.libsList = new Object();
+		for (i in files){
+			var file = files[i];
+			if (file && !fwPage.libsList[file]){
+				myFile = new FWFile;
+				myFile.fwOpenRead(prefix + file + '.js');
+				var outFile = new FWFile;
+				outFile.fwOpenWrite(file + '.js',true,'TEXT');
+				var str = myFile.fwReadString(myFile.fwAvailable);
+				for(var i in replacements){
+					var re = new RegExp(i,'g');
+					str = str.replace(re,replacements[i]);
+				}
+				outFile.fwWrite(str);
+				outFile.fwClose();
+				myFile.fwClose();
+				if (fwParameters[file]) {
+					fwParameters[file].fwSpecify(outFile);
+					var path = fwParameters[file].toString();
+					if(useCustom == true) fwPage.libsList[file] = path;
+				}else{
+					alert (file + '.js was not found in the action bundle');
+				}
+			}
+		}
+		if(addLinks && lastOrders()){
+			var theHead = fwDocument.fwTags.fwFind("head");
+			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602']) fwAbort('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Publishing cannot continue.') || alert('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Please check your settings.');
+			for (i in canon){
+				if (fwPage.libsList[canon[i]]){
+					var file = fwPage.libsList[canon[i]];
+					LinkFileToHead(theHead, file);
+					delete fwPage.libsList[canon[i]];
+				}
+			}
+			for ( i in fwPage.libsList ){
+				LinkFileToHead(theHead, fwPage.libsList[i]);
+			}
+		}
+	}
+	
+	function SetCSSAttribute(tag, attributeName, attributeValue) { 
+		// Sets a "CSS" attribute such as "position:absolute" in a tag value 
+		// Passing an attribute value of null removes that attribute entirely
+		if (tag==null) return; 
+		var tagField = tag['style']; 
+		if (tagField == null){
+			tag['style'] = '"'+attributeName+':'+attributeValue+'"'; 
+		}else{
+			var tagField = tagField.toString();
+			var pairs = tagField.slice(1,-1).split(';');
+			var out = new Array();
+			if(attributeValue != null && tagField.indexOf(attributeName) < 0) out.push(attributeName+':'+attributeValue);
+			for(i in pairs){
+				pairs[i] = pairs[i].replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"); //javascript equivalent of trim
+				if(pairs[i].slice(0,pairs[i].indexOf(':')) == attributeName) {
+					if(attributeValue != null) out.push(attributeName+':'+attributeValue);
+				}else{
+					out.push(pairs[i]);
+				}
+			}
+			tag['style']= fwQuote(out.join('; ')); 
+		}
+	} 
+	function GetCSSAttribute(tag, attributeName) { 
+		// Gets a "CSS" attribute such as "position:absolute" from a tag value 
+		// returns NULL if the attribute can not be found 
+		if (tag==null) return null; 
+		var tagField = tag['style']; 
+		if (tagField == null) {
+			return null; 
+		}else { 
+			var tagField = tagField.toString(); 
+			var pairs = tagField.slice(1,-1).split(';');
+			for(i in pairs){
+				pairs[i] = pairs[i].replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"); //javascript equivalent of trim
+				if(pairs[i].slice(0,pairs[i].indexOf(':')) == attributeName) {
+					return pairs[i].slice(pairs[i].indexOf(':')+1,pairs[i].length);
+				}
+			}
+			return null; 
+		} 
+	} 
+
+
+
+</action-javascript>
+</library-action>
+
+<item-action name="ScriptyLightbox">
+<action-version version="0.2.4">
+ScriptyLightbox Action
+Walter Davis Studio 2009
+</action-version>
+<action-text name="mediaWidth" title="Media Width" />
+<action-text name="mediaHeight" title="Media Height" />
+<action-checkbox name="controller" title="Add Height For QuickTime Controller" default=no />
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="lightwindow" var/>
+<action-file name ="lightwindowcss" var/>
+<action-file name ="ajaxloading" var/>
+<action-file name ="arrowdown" var/>
+<action-file name ="arrowup" var/>
+<action-file name ="black70" var/>
+<action-file name ="black" var/>
+<action-file name ="blank" var/>
+<action-file name ="nextlabel" var/>
+<action-file name ="prevlabel" var/>
+
+<action-javascript>
+<action-include name="scriptyHandlerFunctions">
+	var resources = '';
+
+	function fwInterface(){
+		fwPage.libsList = new Object();
+	}
+	
+	var images = {'ajaxloading':'ajax-loading.gif',
+		'arrowdown':'arrow-down.gif',
+		'arrowup':'arrow-up.gif',
+		'black70':'black-70.png',
+		'black':'black.png',
+		'blank':'blank.gif',
+		'nextlabel':'nextlable.gif',
+		'prevlabel':'prevlabel.gif'
+	};
+	
+	function AddImages(){
+		var path = this.fwPathName;
+		fwPage['lightwindow'] = true;
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':images:';
+		for (i in images){
+			var file = images[i];
+			if (file){
+				myFile = new FWFile;
+				myFile.fwOpenRead(prefix + file);
+				myFile.fwClose();
+				if (fwParameters[i]) {
+					fwParameters[i].fwSpecify(myFile);
+					var path = fwParameters[i].toString();
+					resources = path.substr(0,path.lastIndexOf('/'));
+				}else{
+					alert (file + ' was not found in the action bundle');
+				}
+			}
+		}
+	}
+	function makeIndex(){
+		if(fwParameters['path'] != ''){
+			myFile = new FWFile;
+			if(myFile.fwLocateWrite('Create your index script for "' + fwItem.toString() + '" (' + fwParameters['path'].toString() + ')','index.php','R*ch')){
+				outFile = new FWFile;
+				var path = this.fwPathName;
+				var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+				if (outFile.fwOpenRead(prefix + '_index.php')){
+					var str = outFile.fwReadString(outFile.fwAvailable);
+					outFile.fwClose();
+					myFile.fwWrite(str);
+					myFile.fwClose();
+					//fwParameters["_index"].fwSpecify(myFile);
+					//var file = fwParameters["_index"].toString();
+				}
+				fwItem['scriptCreated'] = true;
+			}
+		}else{
+			fwAbort('Please set the path to your files before generating this script.');
+		}
+	}
+	
+	function addClassName(elm, strClassName){
+		if (! elm || ! strClassName) return;
+		if(elm['class'] && elm['class'].indexOf(strClassName) != -1) return;
+		if(elm['class'] && elm['class'].length > 0) {
+			elm['class'] = fwQuote(elm['class'],'','"');//"
+			elm['class'] = fwQuote(elm['class'] + ' ' + strClassName);
+			return elm['class'];
+		}
+		elm['class'] = fwQuote(strClassName);
+		return elm['class'];
+	}
+	
+	function fwAfterStartHead()
+	{
+		AddImages();
+		var mediaWidth = fwParameters['mediaWidth'].fwValue;
+		if (mediaWidth > 0) {
+			mediaWidth = parseInt(mediaWidth,10);
+		}else{
+			mediaWidth = "this._getParameter('lightwindow_width')";
+		}
+		var mediaHeight = fwParameters['mediaHeight'].fwValue;
+		if (mediaHeight > 0) {
+			mediaHeight = parseInt(mediaHeight,10);
+			mediaHeight = (fwParameters['controller'].fwBoolValue) ? mediaHeight + 16 : mediaHeight;
+		}else{
+			mediaHeight = "this._getParameter('lightwindow_height')";
+		}
+		AddFiles('prototype1602packer,scriptaculous181packer,lightwindow',true,{'RESOURCES':resources,'mediaWidth':mediaWidth,'mediaHeight':mediaHeight});
+		var theHead = fwDocument.fwTags.fwFind("head");
+		var path = this.fwPathName;
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		myFile = new FWFile;
+		myFile.fwOpenRead(prefix + 'lightwindow.css');
+		var outFile = new FWFile;
+		outFile.fwOpenWrite('lightwindow.css',true,'TEXT');
+		var str = myFile.fwReadString(myFile.fwAvailable);
+		str = str.replace(/RESOURCES/g,resources);
+		outFile.fwWrite(str);
+		outFile.fwClose();
+		myFile.fwClose();
+		if (fwParameters['lightwindowcss']) {
+			fwParameters['lightwindowcss'].fwSpecify(outFile);
+			var path = fwParameters['lightwindowcss'].toString();
+		}else{
+			alert ('lightwindow.css was not found in the action bundle');
+		}
+		LinkFileToHead(theHead, fwParameters['lightwindowcss'].fwValue, {'rel':'stylesheet','type':'text/css', 'charset':'utf-8', 'media':'screen'});
+		//AddFiles('_index',false);
+		//alert(fwItem.scriptCreated);
+	}
+	function fwAfterEndHTML(){
+		var box = fwDocument.fwTags.fwFind(fwItem);
+		var links = box.fwFindAll('a');
+		if(links.length > 0){
+			for (var i in links){
+				if (links[i].href) {
+					addClassName(links[i],'lightwindow');
+				}
+			}
+		}else{
+			if(box.fwFindEnclosing('a')){
+				addClassName(box.fwFindEnclosing('a'),'lightwindow');
+			}
+		}
+	}
+	
+</action-javascript>
+</item-action>
+

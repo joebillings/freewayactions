@@ -1,0 +1,238 @@
+<item-action name="Image Replacement">
+<action-version version="0.1b8">
+Image Replacement
+Copyright 2005 Walter Lee Davis
+
+Apply the action to a graphic box to convert it into an h tag.
+
+</action-version>
+<action-popup name="heading" title="Heading Level">
+	<value name="h1" title="H1" default>
+	<value name="h2" title="H2">
+	<value name="h3" title="H3">
+	<value name="h4" title="H4">
+	<value name="h5" title="H5">
+	<value name="h6" title="H6">
+</action-popup>
+<action-file var name="screenstyle" keepwithhtml>
+<action-javascript>
+	function createStyle(headTag,myText,myGif,myName,myHeight,myWidth){
+		if(!fwPage.screenStyle){
+			fwPage.screenStyle = headTag.fwAdd("");
+		}
+		myGif = fwQuote(myGif,'','"');//"
+		fwPage.screenStyle.fwAddRawln("#" + myName);
+		fwPage.screenStyle.fwAddRawln("{ ");
+		fwPage.screenStyle.fwAddRawln("    margin: 0px; ");
+		fwPage.screenStyle.fwAddRawln("    padding-top: " + myHeight + "px; ");
+		fwPage.screenStyle.fwAddRawln("    width: " + myWidth + "px; ");
+		fwPage.screenStyle.fwAddRawln("    background-image: url(" + myGif + "); ");
+		fwPage.screenStyle.fwAddRawln("    background-repeat: no-repeat; ");
+		fwPage.screenStyle.fwAddRawln("    overflow: hidden; ");
+		fwPage.screenStyle.fwAddRawln("    height: " + myHeight + "px; ");
+		fwPage.screenStyle.fwAddRawln("    voice-family: \"\\\"}\\\"\"; ");
+		fwPage.screenStyle.fwAddRawln("    voice-family: inherit; ");
+		fwPage.screenStyle.fwAddRawln("    height: 0; ");
+		fwPage.screenStyle.fwAddRawln("}");
+		fwPage.screenStyle.fwAddRawln("");
+	}
+	function fwBeforeEndHTML(){
+		var headTag = fwDocument.fwTags.fwFind("head");
+		if (!locateAction( "External CSS File" ))
+		{
+			myScreenCSS = makeStylesheet(fwPage.screenStyle.fwToHTML());
+			if(!fwPage.hasscreen == true){
+				addLink(headTag,myScreenCSS);
+			}
+			fwPage.screenStyle.fwDelete();
+		}
+		
+	}
+	function fwAfterEndBody(){
+		var myHeading = fwParameters["heading"].fwValue;
+		var headTag = fwDocument.fwTags.fwFind("head");
+		thisIMG = fwDocument.fwTags.fwFind("img", fwItem);
+		if (thisIMG){
+			var myText = thisIMG.alt;
+			var myGif = thisIMG.src;
+			var myName = fwItem.toString();
+			var myHeight = thisIMG.height;
+			var myWidth = thisIMG.width;
+			myText = fwQuote(myText,'','"');//"
+			if(!myText || myText == null){
+				confirm("Please add ALT text to this item before proceeding");
+			}
+			thisIMG.fwAddEnclosing(myHeading,true);
+			enclosingP = thisIMG.fwFindEnclosing("p");
+			if (enclosingP){			
+				dummy = enclosingP.fwAddEnclosing("",true);
+				dummy.fwMove(thisIMG);
+				dummy.fwAddRaw(thisIMG, myText);
+				myHeader = dummy.fwAddEnclosing(myHeading,true);
+				myHeader.id = fwQuote(myName);
+				myHeader.title = fwQuote(myText);
+				thisIMG.fwDelete();
+				enclosingP.fwDelete();
+				
+			}else{
+				var hTag = thisIMG.fwFindEnclosing(myHeading);
+				if (hTag){
+					hTag.id = fwQuote(myName);
+				}
+				enclosingTD = thisIMG.fwFindEnclosing("td");
+				if (enclosingTD){
+					enclosingTD.fwAddRaw(thisIMG, myText);
+					thisIMG.fwDelete();
+				}else{
+					enclosingTD = thisIMG.fwFindEnclosing("div");
+					if (enclosingTD){
+						enclosingTD.id = fwQuote(fwQuote(enclosingTD.id,'','"') + "_div");//"
+						enclosingTD.fwAddRaw(thisIMG, myText);
+						thisIMG.fwDelete();
+					}
+				}
+			}
+			createStyle(headTag,myText,myGif,myName,myHeight,myWidth);
+		}
+
+//		this bit inserts the CSS into the CSS container
+//		needs to be done here to be caught by the External CSS Action
+		var headTag = fwDocument.fwTags.fwFind("head");
+	
+		theCSS = fwPage.screenStyle.fwToHTML();
+		if (headTag)
+		{		
+			if (locateAction( "External CSS File" ))
+			{
+				// all we need to do is put the CSS into
+				// a CSS container - PJD
+				cssInsert(theCSS);
+				fwPage.screenStyle.fwDelete();
+			}
+		}
+		
+	}
+	
+	function makeStylesheet(textStream){
+		outFile = new FWFile;
+		var myName = fwPage.fwFileName.slice(0,22);
+		myName = myName.slice(0,myName.indexOf("."));
+		if (outFile.fwOpenWrite(myName+"_ir.css",true,"TEXT","R*ch")){
+			outFile.fwWrite(textStream);
+			outFile.fwClose();
+			if(!fwParameters["screenstyle"].fwHasFile){
+				fwParameters["screenstyle"].fwSpecify(outFile);
+			}
+			return fwParameters["screenstyle"].toString();
+		}		
+		return null;
+	}
+	function addLink(where,myCSS){
+			if (where && myCSS){
+			var myLink = where.fwAdd("link");
+			myLink.rel = fwQuote("stylesheet");
+			myLink.type = fwQuote("text/css");
+			myLink.media = fwQuote("screen");
+			myLink.href = fwQuote(myCSS);
+			myLink.fwAddRawOpt("");
+			fwPage.hasscreen = true;
+		}
+	}
+</action-javascript>
+
+<action-javascript>
+// CSS Suite stuff
+function fwAfterEndHTML()
+{
+	// write CSS should be in fwAfterEndHTML()
+	writeCSS();
+}
+
+function writeCSS()
+{
+	var headTag = fwDocument.fwTags.fwFind("head"); 
+
+	if ( fwPage.fwAddCSScontainer )
+	{
+//		Start adding CSS container to the document
+		headTag.fwAddRawOpt('<style type="text/css">');	
+		headTag.fwAddRawOpt('<!--');
+		
+//		Now loop through the content of the CSS container variable
+		for (i in fwPage.cssContainer )
+		{
+			myCode = fwPage.cssContainer[i];
+			
+			myPos = -1;
+			
+//			Check to make sure that the style isn't in the excluded list
+			for ( var j in fwPage.excludeCSSContainer )
+			{
+				myCSS = fwPage.excludeCSSContainer[j];
+				if ( myCSS == myCode )
+				{
+					myPos = j;
+				}
+			}	
+			
+			if (myPos == -1 )
+			{
+				headTag.fwAddRawOpt( myCode.toString() );
+			}
+		}
+
+//		Finish off the CSS container
+		headTag.fwAddRawOpt('-->');
+		headTag.fwAddRawOpt('</style>');
+
+//		Kill off the container variables so that duplicates are not written
+//		by other Actions.
+		fwPage.fwAddCSScontainer=null;
+		fwPage.cssContainer = null;
+	}
+	
+//	Now remove the original styles tag
+	if (locateAction( "External CSS File" )){
+		myStyles = fwDocument.fwTags.fwFindAll("style");
+		
+		for ( i in myStyles )
+		{
+			var myStyle = myStyles[i];
+			if (myStyle)
+			{
+				myStyle.fwDelete();
+			}
+		}
+	}
+}
+
+
+function cssInsert( myCSS )
+{
+//	Inserts CSS into the CSS array. This will be output at the end
+//	of the Action.
+
+	var myPos = -1;
+	var myExcludePos = -1;
+	
+	if ( fwPage.cssMarker[ myCSS ] == null )
+	{
+		fwPage.cssContainer.push( myCSS );
+		fwPage.cssMarker[ myCSS ] = true;
+	}
+}
+
+function locateAction( name )
+{
+	myActions = fwPage.fwFindAllActions( 1 , name , true );
+	if (myActions == name)
+	{
+		return(true);
+	}
+	else
+	{
+		return(false);
+	}
+}
+</action-javascript>
+</item-action>

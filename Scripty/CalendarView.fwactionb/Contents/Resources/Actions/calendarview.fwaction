@@ -1,0 +1,267 @@
+<library-action name="scriptyHandlerFunctions">
+<action-javascript>
+	//mandatory -- set this to true in any action that uses the prototype/scriptaculous stack
+	var scripty = true;
+	//set this to true in order to load the un-packed versions of the libraries
+	var debug = false;
+	function in_array(theArray,search_term) {
+		var i = theArray.length;
+		if (i > 0) {
+			do {
+				if (theArray[i] === search_term) {
+					return true;
+				}
+			} while (i--);
+		}
+		return false;
+	}
+	function checkForUpdates(actionId,actionVersion){
+		if(fwLaunchURL) {
+			fwLaunchURL('http://actionsforge.com/actions/' + actionId + '/version/' + actionVersion);
+		}else{
+			var osa=new FWOSAInterpreter; 
+			osa.fwWrite('open location "http://actionsforge.com/actions/' + actionId + '/version/' + actionVersion + '"'); 
+			osa.fwCompile(); 
+			osa.fwRun(); 
+		}
+	}
+	
+	function GetPageDiv(){
+		var divs = fwDocument.fwTags.fwFindAll('div');
+		for (i in divs){
+			if (divs[i] && divs[i].id && divs[i].id.toString() == '"PageDiv"') return divs[i];
+		}
+		return false;
+	}
+
+	function AddLibraryScript(theTag, theLibraryName)
+	{
+		var scriptTag = theTag.fwAddJavaScript();
+		var theMarkup = fwMarkups[theLibraryName];
+		theMarkup.fwConvertLineEndings = true;
+		scriptTag.fwAddRaw(theMarkup);
+		theTag.fwAddRawln('');
+	}
+
+	function AddEventObserver(theTag, theFunction, theObject, theEvent)
+	{
+		var scriptTag = theTag.fwAddJavaScript();
+		var theMarkup = fwParameters[theFunction].toString();
+		theMarkup.fwConvertLineEndings = true;
+		scriptTag.fwAddRaw('Event.observe(');
+		if(theObject != 'window') theObject = fwQuote(theObject,"'");
+		scriptTag.fwAddRaw(theObject + ', ');
+		scriptTag.fwAddRaw(fwQuote(theEvent,"'") + ', ');
+		scriptTag.fwAddRawln('function(evt){');
+		scriptTag.fwAddRaw(theMarkup);
+		scriptTag.fwAddRawln('');
+		scriptTag.fwAddRawln('});');
+		theTag.fwAddRawln('');
+	}
+
+	function AddObserver(theTag, theFunction, theObject, theEvent)
+	{
+		var scriptTag = theTag.fwAddJavaScript();
+		if(theObject != 'document') theObject = '$(' + fwQuote(theObject,"'") +')';
+		var theMarkup = fwParameters[theFunction].toString();
+		theMarkup.fwConvertLineEndings = true;
+		if(theObject != 'document') scriptTag.fwAddRawln("document.observe('dom:loaded',function(){");
+		scriptTag.fwAddRaw(theObject + '.observe(');
+		scriptTag.fwAddRaw(fwQuote(theEvent,"'") + ', ');
+		scriptTag.fwAddRawln('function(evt){');
+		scriptTag.fwAddRaw(theMarkup);
+		scriptTag.fwAddRawln('');
+		scriptTag.fwAddRawln('});');
+		if(theObject != 'document') scriptTag.fwAddRawln('});');
+		theTag.fwAddRawln('');
+	}
+
+	function lastOrders(){
+		var actions = fwPage.fwFindAllActions();
+		var scripties = new Array();
+		for (i in actions){
+			if (actions[i].scripty == true) scripties.push(actions[i]);
+		}
+		return this === scripties[scripties.length -1];
+	}
+
+	function LinkFileToHead(theTag, file)
+	{
+		var scriptTag = theTag.fwAdd("script", true);
+		scriptTag.src='"'+file+'"';
+		scriptTag.type='"text/javascript"';
+		scriptTag.charset='"utf-8"';
+		scriptTag.fwAddRawln('');
+		theTag.fwAddRawln('');
+	}
+
+	function AddFiles(filesString)
+	{
+		var useCustom = filesString && filesString.length > 0;
+		var path = this.fwPathName;
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		var canon = 'prototype1602packer,scriptaculous181packer,prototype1602,scriptaculous181'.split(',');
+		var files = (useCustom) ? filesString.split(',') : canon;
+		if(!fwPage.libsList) fwPage.libsList = new Object();
+		for (i in files){
+			var file = files[i];
+			if (file && !fwPage.libsList[file]){
+				myFile = new FWFile;
+				myFile.fwOpenRead(prefix + file + '.js');
+				myFile.fwClose();
+				if (fwParameters[file]) {
+					fwParameters[file].fwSpecify(myFile);
+					var path = fwParameters[file].toString();
+					if(useCustom == true) fwPage.libsList[file] = path;
+				}else{
+					alert (file + '.js was not found in the action bundle');
+				}
+			}
+		}
+		if(lastOrders()){
+			var theHead = fwDocument.fwTags.fwFind("head");
+			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602']) fwAbort('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Publishing cannot continue.') || alert('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Please check your settings.');
+			for (i in canon){
+				if (fwPage.libsList[canon[i]]){
+					var file = fwPage.libsList[canon[i]];
+					LinkFileToHead(theHead, file);
+					delete fwPage.libsList[canon[i]];
+				}
+			}
+			for ( i in fwPage.libsList ){
+				LinkFileToHead(theHead, fwPage.libsList[i]);
+			}
+		}
+	}
+	
+	function SetCSSAttribute(tag, attributeName, attributeValue) { 
+		// Sets a "CSS" attribute such as "position:absolute" in a tag value 
+		// Passing an attribute value of null removes that attribute entirely
+		if (tag==null) return; 
+		var tagField = tag['style']; 
+		if (tagField == null){
+			tag['style'] = '"'+attributeName+':'+attributeValue+'"'; 
+		}else{
+			var tagField = tagField.toString();
+			var pairs = tagField.slice(1,-1).split(';');
+			var out = new Array();
+			if(attributeValue != null && tagField.indexOf(attributeName) < 0) out.push(attributeName+':'+attributeValue);
+			for(i in pairs){
+				pairs[i] = pairs[i].replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"); //javascript equivalent of trim
+				if(pairs[i].slice(0,pairs[i].indexOf(':')) == attributeName) {
+					if(attributeValue != null) out.push(attributeName+':'+attributeValue);
+				}else{
+					out.push(pairs[i]);
+				}
+			}
+			tag['style']= fwQuote(out.join('; ')); 
+		}
+	} 
+	function GetCSSAttribute(tag, attributeName) { 
+		// Gets a "CSS" attribute such as "position:absolute" from a tag value 
+		// returns NULL if the attribute can not be found 
+		if (tag==null) return null; 
+		var tagField = tag['style']; 
+		if (tagField == null) {
+			return null; 
+		}else { 
+			var tagField = tagField.toString(); 
+			var pairs = tagField.slice(1,-1).split(';');
+			for(i in pairs){
+				pairs[i] = pairs[i].replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"); //javascript equivalent of trim
+				if(pairs[i].slice(0,pairs[i].indexOf(':')) == attributeName) {
+					return pairs[i].slice(pairs[i].indexOf(':')+1,pairs[i].length);
+				}
+			}
+			return null; 
+		} 
+	} 
+
+
+
+</action-javascript>
+</library-action>
+
+<item-action name="CalendarView">
+<action-version version="0.4.2">
+CalendarView Action
+Walter Davis Studio 2008
+
+CalendarView (for Prototype)
+Copyright 2007-2008 Singlesnet, Inc.
+Copyright 2002-2005 Mihai Bazon
+Maintained by Justin Mecham <justin@corp.singlesnet.com>
+
+This calendar is based very loosely on the Dynarch Calendar in that it was used as a base, but completely gutted and more or less rewritten in place to use the Prototype JavaScript library.
+
+As such, CalendarView is licensed under the terms of the GNU Lesser General Public License (LGPL). More information on the Dynarch Calendar can be found at: www.dynarch.com/projects/calendar
+</action-version>
+<action-appliesto non-html32/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="calendarview" var/>
+<action-file name ="calendarstyle" var/>
+<action-text name ="dateFormat" title="Date Format" default="%Y-%m-%d" />
+<action-popup name="triggerEvent" title="Trigger Event">
+<value name="onfocus" title="Focus">
+<value name="onclick" title="Click" default>
+</action-popup>
+<action-javascript>
+<action-include name="scriptyHandlerFunctions">
+	function fwInterface(){
+		fwPage.libsList = new Object();
+	}	
+	
+	function fwAfterStartHead()
+	{
+		var filesString = 'prototype1602packer,calendarview';
+		AddFiles(filesString);
+	}
+	function fwBeforeEndHead(){
+		if(!fwDocument.calstyle){
+			var theHead = fwDocument.fwTags.fwFind("head");
+			var path = this.fwPathName;
+			var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+			myFile = new FWFile;
+			myFile.fwOpenRead(prefix + 'calendarview.css');
+			myFile.fwClose();
+			fwParameters['calendarstyle'].fwSpecify(myFile);
+			var path = fwParameters['calendarstyle'].toString();
+			if (theHead){
+				var myLink = theHead.fwAdd("link");
+				myLink.rel = fwQuote("stylesheet");
+				myLink.type = fwQuote("text/css");
+				myLink.href = fwQuote(path);
+				myLink.fwAddRawOpt("");
+			}
+			fwDocument['calstyle'] = true;
+		}
+	}
+	
+	function fwBeforeEndBody(){
+		var theHead = fwDocument.fwTags.fwFind("head");
+		var myself = fwItem.toString();
+		var thisItem = fwDocument.fwTags.fwFind("input", fwItem);
+		if (thisItem){
+			if(thisItem.id == undefined) {
+				thisItem['id'] = thisItem.name;
+				myself = thisItem.name.toString().replace(/"/g,''); //"
+			}
+			
+			var p = thisItem.fwFindEnclosing('div');
+			if(p && thisItem.id.toString() == p.id.toString()){
+				p.id = fwQuote(myself + '_wrap');
+			}
+		}
+		var dateListener = "	Calendar.setup({dateField: '" + myself + "',dateFormat: '" + fwParameters['dateFormat'].fwValue + "',triggerEvent: '" + fwParameters['triggerEvent'] + "'});";
+		var scriptTag = theHead.fwAddJavaScript();
+		dateListener.fwConvertLineEndings = true;
+		scriptTag.fwAddRaw('document.observe(');
+		scriptTag.fwAddRaw("'dom:loaded', ");
+		scriptTag.fwAddRawln('function(evt){');
+		scriptTag.fwAddRaw(dateListener);
+		scriptTag.fwAddRawln('');
+		scriptTag.fwAddRawln('});');
+	}
+	
+</action-javascript>
+</item-action>
