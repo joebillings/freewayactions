@@ -47,7 +47,7 @@ if(!function_exists('scandir')){
 }
 //base for all links
 $port = ($_SERVER['SERVER_PORT'] != '80') ? ':' . $_SERVER['SERVER_PORT'] : '';
-$base = 'http://' . $_SERVER['SERVER_NAME'] . $port . dirname($_SERVER['REQUEST_URI']) . '/';
+$base = 'http://' . $_SERVER['HTTP_HOST'] . $port . dirname($_SERVER['REQUEST_URI']) . '/';
 //scan the directory this file is in
 $files_base = dirname(__FILE__);
 $files = scandir($files_base);
