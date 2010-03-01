@@ -116,7 +116,7 @@
 		}
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
 		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
@@ -250,7 +250,7 @@ As such, CalendarView is licensed under the terms of the GNU Lesser General Publ
 		if(!fwDocument.calstyle){
 			var theHead = fwDocument.fwTags.fwFind("head");
 			var path = this.fwPathName;
-			var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+			var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
 			myFile = new FWFile;
 			myFile.fwOpenRead(prefix + 'calendarview.css');
 			myFile.fwClose();

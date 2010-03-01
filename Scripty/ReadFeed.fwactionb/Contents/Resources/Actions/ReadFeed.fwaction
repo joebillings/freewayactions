@@ -38,7 +38,7 @@ $rss->Read($url);
 	function RequirePhpFile(file){
 		var h = fwDocument.fwTags.fwFind('html').fwEnclosing;
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
 		if(!fwPage.phpList) fwPage.phpList = new Object();
 		if (h){
 			if (file && !fwPage.phpList[file]){

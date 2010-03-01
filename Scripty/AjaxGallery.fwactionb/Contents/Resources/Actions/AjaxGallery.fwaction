@@ -94,7 +94,7 @@
 	function AddFile(fileName, addLinkToHead)
 	{
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
 		myFile = new FWFile;
 		if(!myFile.fwOpenRead(prefix + fileName + '.js')){
 			myFile.fwOpenRead(prefix + fileName + '.gif');
@@ -145,7 +145,7 @@
 		}
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
 		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
@@ -275,7 +275,7 @@ Walter Davis Studio 2009
 			if(myFile.fwLocateWrite('Create your index script for "' + fwItem.toString() + '" (' + fwParameters['path'].toString() + ')','index.php','R*ch')){
 				outFile = new FWFile;
 				var path = this.fwPathName;
-				var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
+				var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
 				if (outFile.fwOpenRead(prefix + '_index.php')){
 					var str = outFile.fwReadString(outFile.fwAvailable);
 					outFile.fwClose();
