@@ -187,7 +187,7 @@
 				}
 			}
 			for ( i in fwPage.libsList )
-				connected ? LinkRemoteFileToHead(theHead, fwPage.libsList[i]) : LinkFileToHead(theHead, fwPage.libsList[i]);
+				LinkFileToHead(theHead, fwPage.libsList[i]);
 		}
 	}
 
