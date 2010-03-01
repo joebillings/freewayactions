@@ -145,7 +145,7 @@
 		}
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
 		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
