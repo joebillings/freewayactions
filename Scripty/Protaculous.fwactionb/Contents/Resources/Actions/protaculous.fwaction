@@ -86,52 +86,82 @@
 		return this === scripties[scripties.length -1];
 	}
 
-	function LinkFileToHead(theTag, file)
-	{
+	function LinkFileToHead(theTag, file){
 		var scriptTag = theTag.fwAdd("script", true);
-		scriptTag.src='"'+file+'"';
-		scriptTag.type='"text/javascript"';
-		scriptTag.charset='"utf-8"';
-		scriptTag.fwAddRawln('');
-		theTag.fwAddRawln('');
+		scriptTag.src = fwQuote(file);
+		scriptTag.type = fwQuote("text/javascript");
+		scriptTag.fwAddRawOpt();
+		theTag.fwAddRawOpt();
 	}
-
-	function AddFiles(filesString)
-	{
+	
+	function LinkRemoteFileToHead(theTag, file){
+		var path = "http://ajax.googleapis.com/ajax/libs/"
+		var scriptTag = theTag.fwAdd("script", true);
+		scriptTag.src = fwQuote(path + (file.match("pro") ? "prototype/1.6.1.0/prototype.js" : "scriptaculous/1.8.3/scriptaculous.js"));
+		scriptTag.type = fwQuote("text/javascript");
+		scriptTag.fwAddRawOpt();
+		theTag.fwAddRawOpt();
+	}
+	
+	function AddFiles(filesString){
+		var theHead = fwDocument.fwTags.fwFind("head");
+		var connected = function(){
+			if(fwShellCommand) {
+				return fwShellCommand('curl ajax.googleapis.com');
+			}else{
+				var osa=new FWOSAInterpreter; 
+				osa.fwWrite('do shell script "curl ajax.googleapis.com"'); 
+				osa.fwCompile(); 
+				return osa.fwRun();
+			}
+		}
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
-		var canon = 'prototype1602packer,scriptaculous181packer,prototype1602,scriptaculous181'.split(',');
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
+		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
+		
 		var files = (useCustom) ? filesString.split(',') : canon;
-		if(!fwPage.libsList) fwPage.libsList = new Object();
+
+		if(!fwPage.libsList)
+			fwPage.libsList = new Object();
+
 		for (i in files){
 			var file = files[i];
-			if (file && !fwPage.libsList[file]){
+			if (file && !fwPage.libsList[file])
+			{
 				myFile = new FWFile;
 				myFile.fwOpenRead(prefix + file + '.js');
 				myFile.fwClose();
-				if (fwParameters[file]) {
+				if (fwParameters[file])
+				{
 					fwParameters[file].fwSpecify(myFile);
 					var path = fwParameters[file].toString();
-					if(useCustom == true) fwPage.libsList[file] = path;
-				}else{
-					alert (file + '.js was not found in the action bundle');
+					if(useCustom == true)
+						fwPage.libsList[file] = path;
+				}
+				else
+				{
+					fwAlert(ParamString(kFileNotFound, file, ".js"));
 				}
 			}
 		}
+
 		if(lastOrders()){
-			var theHead = fwDocument.fwTags.fwFind("head");
-			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602']) fwAbort('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Publishing cannot continue.') || alert('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Please check your settings.');
+			if(fwPage.libsList['prototype1610packer'] && fwPage.libsList['prototype1610'])
+				fwPage.libsList['prototype1610packer'] = null;
+
+			if(fwPage.libsList['scriptaculous183packer'] && fwPage.libsList['scriptaculous183'])
+				fwPage.libsList['scriptaculous183packer'] = null;
+
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
 					var file = fwPage.libsList[canon[i]];
-					LinkFileToHead(theHead, file);
+					connected ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
 					delete fwPage.libsList[canon[i]];
 				}
 			}
-			for ( i in fwPage.libsList ){
-				LinkFileToHead(theHead, fwPage.libsList[i]);
-			}
+			for ( i in fwPage.libsList )
+				connected ? LinkRemoteFileToHead(theHead, fwPage.libsList[i]) : LinkFileToHead(theHead, fwPage.libsList[i]);
 		}
 	}
 	
@@ -294,10 +324,10 @@
 Protaculous Action
 Walter Davis Studio 2007
 </action-version>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-popup name="lib" title="Use Library">
 <value name="prototype">
 <value name="prototype-packed">
@@ -337,16 +367,16 @@ Walter Davis Studio 2007
 	{
 		var filesString = '';
 		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
-			filesString = 'prototype1602packer,scriptaculous181packer';
+			filesString = 'prototype1610packer,scriptaculous183packer';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype-packed'){
-			filesString = 'prototype1602packer';
+			filesString = 'prototype1610packer';
 		}
 		if(fwParameters['lib'].fwValue == 'scriptaculous'){
-			filesString = 'prototype1602,scriptaculous181';
+			filesString = 'prototype1610,scriptaculous183';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype'){
-			filesString = 'prototype1602';
+			filesString = 'prototype1610';
 		}
 		AddFiles(filesString);
 	}
@@ -364,10 +394,10 @@ Walter Davis Studio 2007
 Observer Action
 Walter Davis Studio 2008
 </action-version>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-popup name="lib" title="Use Library">
 <value name="prototype">
 <value name="prototype-packed">
@@ -407,16 +437,16 @@ Walter Davis Studio 2008
 	{
 		var filesString = '';
 		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
-			filesString = 'prototype1602packer,scriptaculous181packer';
+			filesString = 'prototype1610packer,scriptaculous183packer';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype-packed'){
-			filesString = 'prototype1602packer';
+			filesString = 'prototype1610packer';
 		}
 		if(fwParameters['lib'].fwValue == 'scriptaculous'){
-			filesString = 'prototype1602,scriptaculous181';
+			filesString = 'prototype1610,scriptaculous183';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype'){
-			filesString = 'prototype1602';
+			filesString = 'prototype1610';
 		}
 		AddFiles(filesString);
 	}
@@ -459,10 +489,10 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
     });
 });
 </action-markup>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="glider" var/>
 <action-text name="autoglide" title="Auto-Glide Interval">
 <action-text name="duration" title="Effect Duration (seconds)" default="0.5" />
@@ -503,7 +533,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 		theTag.fwAddRawln('');
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
 	}
 	function clonePosition(target,source){
 		pos = ['top','left','bottom','right','z-index','position'];
@@ -597,10 +627,10 @@ Apply the action to any layer to designate a Carousel pane.
 
 </action-version>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -626,7 +656,7 @@ Apply the action to any layer to designate a Carousel pane.
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
 	}
 
 </action-javascript>
@@ -647,10 +677,10 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 <value name="previous">
 <value name="next">
 </action-popup>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -700,7 +730,7 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
 	}
 </action-javascript>
 </item-action>
@@ -715,10 +745,10 @@ Use this Action inline to create direct text navigation links to one of the Caro
 </action-version>
 <action-text name="Text"   script default="link text"/>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -782,7 +812,7 @@ Use this Action inline to create direct text navigation links to one of the Caro
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
 	}
 </action-javascript>
 </action>
@@ -797,10 +827,10 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 
 </action-version>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
-<action-file name ="prototype1602" var/>
-<action-file name ="scriptaculous181" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -860,7 +890,7 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
 	}
 </action-javascript>
 </item-action>

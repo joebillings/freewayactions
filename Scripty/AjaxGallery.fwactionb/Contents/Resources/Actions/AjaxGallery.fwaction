@@ -91,18 +91,6 @@
 		return this === scripties[scripties.length -1];
 	}
 
-	function LinkFileToHead(theTag, file, options)
-	{
-		var options = options || {'type': 'text/javascript','charset':'utf-8'};
-		var scriptTag = theTag.fwAdd("script", true);
-		scriptTag.src='"'+file+'"';
-		for(var i in options){
-			scriptTag[i] = fwQuote(options[i]);
-		}
-		scriptTag.fwAddRawln('');
-		theTag.fwAddRawln('');
-	}
-	
 	function AddFile(fileName, addLinkToHead)
 	{
 		var path = this.fwPathName;
@@ -126,44 +114,82 @@
 	}
 
 
-	function AddFiles(filesString, addLinks)
-	{
+	function LinkFileToHead(theTag, file){
+		var scriptTag = theTag.fwAdd("script", true);
+		scriptTag.src = fwQuote(file);
+		scriptTag.type = fwQuote("text/javascript");
+		scriptTag.fwAddRawOpt();
+		theTag.fwAddRawOpt();
+	}
+	
+	function LinkRemoteFileToHead(theTag, file){
+		var path = "http://ajax.googleapis.com/ajax/libs/"
+		var scriptTag = theTag.fwAdd("script", true);
+		scriptTag.src = fwQuote(path + (file.match("pro") ? "prototype/1.6.1.0/prototype.js" : "scriptaculous/1.8.3/scriptaculous.js"));
+		scriptTag.type = fwQuote("text/javascript");
+		scriptTag.fwAddRawOpt();
+		theTag.fwAddRawOpt();
+	}
+	
+	function AddFiles(filesString){
+		var theHead = fwDocument.fwTags.fwFind("head");
+		var connected = function(){
+			if(fwShellCommand) {
+				return fwShellCommand('curl ajax.googleapis.com');
+			}else{
+				var osa=new FWOSAInterpreter; 
+				osa.fwWrite('do shell script "curl ajax.googleapis.com"'); 
+				osa.fwCompile(); 
+				return osa.fwRun();
+			}
+		}
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
-		var prefix = path.substring(0, path.lastIndexOf(":")) + ':';
-		var canon = 'prototype1602packer,scriptaculous181packer,prototype1602,scriptaculous181'.split(',');
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
+		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
+		
 		var files = (useCustom) ? filesString.split(',') : canon;
-		if(!fwPage.libsList) fwPage.libsList = new Object();
+
+		if(!fwPage.libsList)
+			fwPage.libsList = new Object();
+
 		for (i in files){
 			var file = files[i];
-			if (file && !fwPage.libsList[file]){
+			if (file && !fwPage.libsList[file])
+			{
 				myFile = new FWFile;
-				if(!myFile.fwOpenRead(prefix + file + '.js')){
-					myFile.fwOpenRead(prefix + file + '.php');
-				}
+				myFile.fwOpenRead(prefix + file + '.js');
 				myFile.fwClose();
-				if (fwParameters[file]) {
+				if (fwParameters[file])
+				{
 					fwParameters[file].fwSpecify(myFile);
 					var path = fwParameters[file].toString();
-					if(useCustom == true) fwPage.libsList[file] = path;
-				}else{
-					alert (file + '.js was not found in the action bundle');
+					if(useCustom == true)
+						fwPage.libsList[file] = path;
+				}
+				else
+				{
+					fwAlert(ParamString(kFileNotFound, file, ".js"));
 				}
 			}
 		}
-		if(addLinks && lastOrders()){
-			var theHead = fwDocument.fwTags.fwFind("head");
-			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602']) fwAbort('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Publishing cannot continue.') || alert('This page contains both packed and regular versions of the Prototype or Scriptaculous libraries. Please check your settings.');
+
+		if(lastOrders()){
+			if(fwPage.libsList['prototype1610packer'] && fwPage.libsList['prototype1610'])
+				fwPage.libsList['prototype1610packer'] = null;
+
+			if(fwPage.libsList['scriptaculous183packer'] && fwPage.libsList['scriptaculous183'])
+				fwPage.libsList['scriptaculous183packer'] = null;
+
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
 					var file = fwPage.libsList[canon[i]];
-					LinkFileToHead(theHead, file);
+					connected ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
 					delete fwPage.libsList[canon[i]];
 				}
 			}
-			for ( i in fwPage.libsList ){
-				LinkFileToHead(theHead, fwPage.libsList[i]);
-			}
+			for ( i in fwPage.libsList )
+				connected ? LinkRemoteFileToHead(theHead, fwPage.libsList[i]) : LinkFileToHead(theHead, fwPage.libsList[i]);
 		}
 	}
 	
@@ -220,8 +246,8 @@
 AjaxGallery Action
 Walter Davis Studio 2009
 </action-version>
-<action-file name ="prototype1602packer" var/>
-<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
 <action-file name ="lightwindow" var/>
 <action-file name ="spinner" var/>
 <action-file name ="loading" var/>
@@ -267,7 +293,7 @@ Walter Davis Studio 2009
 	
 	function fwAfterStartHead()
 	{
-		AddFiles('prototype1602packer,scriptaculous181packer,lightwindow',true);
+		AddFiles('prototype1610packer,scriptaculous183packer,lightwindow',true);
 		var theHead = fwDocument.fwTags.fwFind("head");
 		LinkFileToHead(theHead, 'lightwindowcss', {'rel':'stylesheet','type':'text/css', 'charset':'utf-8', 'media':'screen'});
 
