@@ -112,7 +112,7 @@
 		var theHead = fwDocument.fwTags.fwFind("head");
 		var connected = function(){
 			if(fwShellCommand) {
-				return fwShellCommand('curl ajax.googleapis.com');
+				return fwShellCommand('ping -c1 -i1 http://ajax.googleapis.com');
 			}else{
 				var osa=new FWOSAInterpreter; 
 				osa.fwWrite('do shell script "curl ajax.googleapis.com"'); 
@@ -161,7 +161,7 @@
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
 					var file = fwPage.libsList[canon[i]];
-					connected ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
+					connected() ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
 					delete fwPage.libsList[canon[i]];
 				}
 			}
