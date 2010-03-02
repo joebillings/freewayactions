@@ -320,7 +320,7 @@
 </library-action>
 
 <page-action name="Protaculous">
-<action-version version="0.6">
+<action-version version="0.6.1">
 Protaculous Action
 Walter Davis Studio 2007
 </action-version>
@@ -390,7 +390,7 @@ Walter Davis Studio 2007
 
 
 <item-action name="Observer">
-<action-version version="0.2">
+<action-version version="0.2.1">
 Observer Action
 Walter Davis Studio 2008
 </action-version>
@@ -464,7 +464,7 @@ Walter Davis Studio 2008
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2">
+<action-version version="1.2.1">
 Carousel
 Action ©2007-9 Walter Lee Davis
 Glider.js ©2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -619,7 +619,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 
 <item-action name="Carousel Pane">
 <action-appliesto layer non-html32/>
-<action-version version="0.3">
+<action-version version="0.3.1">
 Carousel Pane
 ©2009 Walter Lee Davis
 
@@ -665,7 +665,7 @@ Apply the action to any layer to designate a Carousel pane.
 
 <item-action name="Carousel Button">
 <action-appliesto graphic pass-through/>
-<action-version version="0.9">
+<action-version version="0.9.1">
 Carousel Button
 ©2007 Walter Lee Davis
 
@@ -736,7 +736,7 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 </item-action>
 
 <action name="Carousel Text Tab">
-<action-version version="0.2">
+<action-version version="0.2.1">
 Carousel Text Tab
 ©2009 Walter Lee Davis
 
@@ -819,7 +819,7 @@ Use this Action inline to create direct text navigation links to one of the Caro
 
 <item-action name="Carousel Tab">
 <action-appliesto graphic pass-through/>
-<action-version version="0.7">
+<action-version version="0.7.1">
 Carousel Tab
 ©2007 Walter Lee Davis
 

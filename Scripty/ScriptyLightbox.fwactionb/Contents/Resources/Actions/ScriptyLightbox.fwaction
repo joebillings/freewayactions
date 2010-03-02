@@ -241,7 +241,7 @@
 </library-action>
 
 <item-action name="ScriptyLightbox">
-<action-version version="0.3">
+<action-version version="0.3.1">
 ScriptyLightbox Action
 Walter Davis Studio 2009
 </action-version>
