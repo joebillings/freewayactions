@@ -84,7 +84,7 @@ If applied to a table, height or width properties will be removed from the enclo
 							if(forceWidth){
 								thisItem[i].WIDTH = '100%';
 								SetCSSAttribute(thisItem[i],'width','100%');
-								alert(thisItem[i]);
+								//alert(thisItem[i]);
 							}
 						}
 						var children = thisItem.fwFindAll('td');
