@@ -658,6 +658,13 @@ Apply the action to any layer to designate a Carousel pane.
 	function fwAfterStartHead(){
 		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
 	}
+	function fwBeforeEndBody(){
+		// Loop through all children and apply the removeFromRelativeLayout flag to them
+		var items = fwItem.fwFindAllItems(true);
+		for(var i in items)
+			items[i].removeFromRelativeLayout = 1;
+	}
+	
 
 </action-javascript>
 </item-action>
