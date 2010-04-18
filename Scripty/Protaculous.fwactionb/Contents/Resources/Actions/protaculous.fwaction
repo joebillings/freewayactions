@@ -26,6 +26,32 @@
 			osa.fwRun(); 
 		}
 	}
+	String.prototype.strip = function() {
+		return this.replace(/^\s+/, '').replace(/\s+$/, '');
+	}
+
+	var hasClassName = function(element, className) {
+		className = fwQuote(className,'','"'); //"
+		var elementClassName = (element["class"]) ? fwQuote(element["class"],'','"') : ''; //"
+		return (elementClassName.length > 0 && (elementClassName == className || new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
+	};
+
+	var addClassName = function(element, className) {
+		className = fwQuote(className,'','"'); //"
+		if (!hasClassName(element,className)){
+			var elementClassName = (element["class"]) ? fwQuote(element["class"],'','"') : ''; //"
+			var out = (elementClassName + ' ' + className).strip();
+			return element["class"] = fwQuote(out);
+		}
+	};
+
+	var removeClassName = function(element, className) {
+		var className = fwQuote(className,'','"');//"
+		var elementClassName = (element['class']) ? fwQuote(element['class'],'','"') : '';//"
+		elementClassName = elementClassName.replace(
+			new RegExp("(^|\\s+)" + className + "(\\s+|$)"), ' ').replace(/(^\s+|\s+$)/g,'');
+		return element['class'] = fwQuote(elementClassName);
+	};
 	
 	function GetPageDiv(){
 		var divs = fwDocument.fwTags.fwFindAll('div');
@@ -313,31 +339,6 @@
 		}
 		return height + 'px';
 	}
-	// add a classname to an object
-	function addClassName(item, value)
-	{
-		if(item["class"]){
-			var c = item["class"].slice(1,-1); //unquoted class string
-			if(c.indexOf(value) > -1){
-				c += ' ' + value;
-				item["class"] = fwQuote(c);
-			}
-		}else{
-			item["class"] = fwQuote(value);
-		}
-		return item["class"];
-	}
-	//remove a classname from an object
-	function removeClassName(item, value){
-		if(item["class"]){
-			var c = item["class"].slice(1,-1).split(' '); //unquoted class string as array
-			for(i = 0; i < c.length; i++){
-				if(c[i].indexOf(value) > -1) delete(c[i]);
-			}
-			item['class'] = fwQuote(c.join(' '));
-		}
-		return item["class"];
-	}
 
 </action-javascript>
 </library-action>
@@ -487,7 +488,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.2">
+<action-version version="1.2.3">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -585,9 +586,12 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 	
 	function fwBeforeEndHTML(){
 		var thisItem = fwDocument.fwTags.fwFind("div", fwItem);
+		var originalWidth = GetWidth(thisItem);
+		var originalHeight = GetHeight(thisItem);
 		if (thisItem){
 			var children = [];
 			var child = thisItem.fwFirst;
+			var first = thisItem.fwFirst;
 			while(child)
 			{
 				children.push(child);
@@ -598,6 +602,9 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 			inner.fwMove(children);
 			inner.id = thisItem.id;
 			inner.style = thisItem.style;
+			SetCSSAttribute(thisItem,'border',null);
+			SetCSSAttribute(thisItem,'height',originalHeight);
+			SetCSSAttribute(thisItem,'width',originalWidth);
 			removePositioning(inner);
 			thisItem.id = fwQuote('carousel_' + inner.id.toString().slice(1,-1));
  			var w = parseInt(GetCSSAttribute(thisItem,'width'));

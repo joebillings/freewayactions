@@ -137,3 +137,19 @@ function fwAfterEndHTML(){
 }
 </action-javascript>
 </folder-action>
+<page-action name="com.wdstudio.stuntdouble" title="Stunt Double">
+<action-checkbox name="Activate">
+<action-label name="-">
+<action-version version="0.1">
+"Stunt Double" action
+
+</action-version>
+
+<action-javascript>
+function fwInterface(){
+	var inputs = fwPage.fwItems;
+	var out = '';
+	for (i in inputs) out += ' ' + inputs[i];
+}
+</action-javascript>
+</page-action>
