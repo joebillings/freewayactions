@@ -144,7 +144,7 @@
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
-		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
+		var canon = 'prototype1602packer,prototype1602,scriptaculous181packer,scriptaculous181'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
 
@@ -173,11 +173,11 @@
 		}
 
 		if(lastOrders()){
-			if(fwPage.libsList['prototype1610packer'] && fwPage.libsList['prototype1610'])
-				fwPage.libsList['prototype1610packer'] = null;
+			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602'])
+				fwPage.libsList['prototype1602packer'] = null;
 
-			if(fwPage.libsList['scriptaculous183packer'] && fwPage.libsList['scriptaculous183'])
-				fwPage.libsList['scriptaculous183packer'] = null;
+			if(fwPage.libsList['scriptaculous181packer'] && fwPage.libsList['scriptaculous181'])
+				fwPage.libsList['scriptaculous181packer'] = null;
 
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
@@ -348,10 +348,10 @@
 Protaculous Action
 Copyright (c) Walter Davis Studio 2007 - 2010
 </action-version>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-popup name="lib" title="Use Library">
 <value name="prototype">
 <value name="prototype-packed">
@@ -391,16 +391,16 @@ Copyright (c) Walter Davis Studio 2007 - 2010
 	{
 		var filesString = '';
 		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
-			filesString = 'prototype1610packer,scriptaculous183packer';
+			filesString = 'prototype1602packer,scriptaculous181packer';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype-packed'){
-			filesString = 'prototype1610packer';
+			filesString = 'prototype1602packer';
 		}
 		if(fwParameters['lib'].fwValue == 'scriptaculous'){
-			filesString = 'prototype1610,scriptaculous183';
+			filesString = 'prototype1602,scriptaculous181';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype'){
-			filesString = 'prototype1610';
+			filesString = 'prototype1602';
 		}
 		AddFiles(filesString);
 	}
@@ -418,10 +418,10 @@ Copyright (c) Walter Davis Studio 2007 - 2010
 Observer Action
 Copyright (c) Walter Davis Studio 2008 - 2010
 </action-version>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-popup name="lib" title="Use Library">
 <value name="prototype">
 <value name="prototype-packed">
@@ -461,16 +461,16 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 	{
 		var filesString = '';
 		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
-			filesString = 'prototype1610packer,scriptaculous183packer';
+			filesString = 'prototype1602packer,scriptaculous181packer';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype-packed'){
-			filesString = 'prototype1610packer';
+			filesString = 'prototype1602packer';
 		}
 		if(fwParameters['lib'].fwValue == 'scriptaculous'){
-			filesString = 'prototype1610,scriptaculous183';
+			filesString = 'prototype1602,scriptaculous181';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype'){
-			filesString = 'prototype1610';
+			filesString = 'prototype1602';
 		}
 		AddFiles(filesString);
 	}
@@ -488,7 +488,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.5">
+<action-version version="1.2.4">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -513,10 +513,10 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
     });
 });
 </action-markup>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-file name ="glider" var/>
 <action-text name="autoglide" title="Auto-Glide Interval">
 <action-text name="duration" title="Effect Duration (seconds)" default="0.5" />
@@ -557,7 +557,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 		theTag.fwAddRawln('');
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
+		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
 	}
 	function clonePosition(target,source){
 		pos = ['top','left','bottom','right','z-index','position'];
@@ -651,10 +651,10 @@ Apply the action to any layer to designate a Carousel pane.
 
 </action-version>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -679,7 +679,7 @@ Apply the action to any layer to designate a Carousel pane.
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
+		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
 	}
 	function fwBeforeEndBody(){
 		// Loop through all children and apply the removeFromRelativeLayout flag to them
@@ -707,10 +707,10 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 <value name="previous">
 <value name="next">
 </action-popup>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -762,7 +762,7 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
+		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
 	}
 </action-javascript>
 </item-action>
@@ -777,10 +777,10 @@ Use this Action inline to create direct text navigation links to one of the Caro
 </action-version>
 <action-text name="Text"   script default="link text"/>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -843,7 +843,7 @@ Use this Action inline to create direct text navigation links to one of the Caro
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
+		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
 	}
 </action-javascript>
 </action>
@@ -858,10 +858,10 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 
 </action-version>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
-<action-file name ="prototype1610" var/>
-<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/>
 <action-file name ="glider" var/>
 <action-javascript>
 <action-include name="scriptyHandlerFunctions">
@@ -912,7 +912,7 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1610,scriptaculous183,glider') : AddFiles('prototype1610packer,scriptaculous183packer,glider');
+		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
 	}
 </action-javascript>
 </item-action>

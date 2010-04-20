@@ -123,7 +123,7 @@
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
-		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
+		var canon = 'prototype1602packer,prototype1602,scriptaculous181packer,scriptaculous181'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
 
@@ -152,11 +152,11 @@
 		}
 
 		if(lastOrders()){
-			if(fwPage.libsList['prototype1610packer'] && fwPage.libsList['prototype1610'])
-				fwPage.libsList['prototype1610packer'] = null;
+			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602'])
+				fwPage.libsList['prototype1602packer'] = null;
 
-			if(fwPage.libsList['scriptaculous183packer'] && fwPage.libsList['scriptaculous183'])
-				fwPage.libsList['scriptaculous183packer'] = null;
+			if(fwPage.libsList['scriptaculous181packer'] && fwPage.libsList['scriptaculous181'])
+				fwPage.libsList['scriptaculous181packer'] = null;
 
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
@@ -245,7 +245,7 @@
 AjaxFileListing Action
 Walter Davis Studio 2008
 </action-version>
-<action-file name ="prototype1610packer" var/>
+<action-file name ="prototype1602packer" var/>
 <action-file name ="spinner" var/>
 <action-file name ="loading" var/>
 <action-file name="_index" var />
@@ -290,7 +290,7 @@ Walter Davis Studio 2008
 	
 	function fwAfterStartHead()
 	{
-		AddFiles('prototype1610packer',true);
+		AddFiles('prototype1602packer',true);
 		//AddFiles('_index',false);
 		//alert(fwItem.scriptCreated);
 	}

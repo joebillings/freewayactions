@@ -153,7 +153,7 @@
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
-		var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
+		var canon = 'prototype1602packer,prototype1602,scriptaculous181packer,scriptaculous181'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
 
@@ -182,11 +182,11 @@
 		}
 
 		if(lastOrders()){
-			if(fwPage.libsList['prototype1610packer'] && fwPage.libsList['prototype1610'])
-				fwPage.libsList['prototype1610packer'] = null;
+			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602'])
+				fwPage.libsList['prototype1602packer'] = null;
 
-			if(fwPage.libsList['scriptaculous183packer'] && fwPage.libsList['scriptaculous183'])
-				fwPage.libsList['scriptaculous183packer'] = null;
+			if(fwPage.libsList['scriptaculous181packer'] && fwPage.libsList['scriptaculous181'])
+				fwPage.libsList['scriptaculous181packer'] = null;
 
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
@@ -257,8 +257,8 @@ Walter Davis Studio 2009, 2010
 <action-text name="mediaWidth" title="Media Width" />
 <action-text name="mediaHeight" title="Media Height" />
 <action-checkbox name="controller" title="Add Height For QuickTime Controller" default=no />
-<action-file name ="prototype1610packer" var/>
-<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
 <action-file name ="lightwindow" var/>
 <action-file name ="lightwindowcss" var/>
 <action-file name ="ajaxloading" var/>
@@ -402,7 +402,7 @@ Walter Davis Studio 2009, 2010
 		}else{
 			mediaHeight = "this._getParameter('lightwindow_height')";
 		}
-		AddFiles('prototype1610packer,scriptaculous183packer');
+		AddFiles('prototype1602packer,scriptaculous181packer');
 		ReplaceStrings('lightwindow',{'RESOURCES':resources,'mediaWidth':mediaWidth,'mediaHeight':mediaHeight})
 		var theHead = fwDocument.fwTags.fwFind("head");
 		var path = this.fwPathName;
