@@ -242,9 +242,9 @@
 </library-action>
 
 <action name="AjaxGallery" height="12">
-<action-version version="0.2.1">
+<action-version version="0.2.2">
 AjaxGallery Action
-Walter Davis Studio 2009
+Walter Davis Studio 2009 - 2010
 </action-version>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
