@@ -488,7 +488,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.4">
+<action-version version="1.2.5">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -497,7 +497,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 
 </action-version>
 <action-markup custom name="glide">Event.observe(window,'load',function(){
-	var select = (window.location.href.indexOf('?') > -1) ? window.location.href.split('?')[1] : $(__glideObject__).down('div.section').id;
+	var select = (window.location.href.indexOf('?') > -1) ? window.location.href.split('?')[1] : '';
     var my_glider = new Glider(__glideObject__, {duration:__duration____glideInterval__, initialSection: select});
     $$('.__glideClass__.next').each(function(elm){
     	    elm.observe('click',function(evt){
@@ -607,10 +607,11 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 			SetCSSAttribute(thisItem,'width',originalWidth);
 			removePositioning(inner);
 			thisItem.id = fwQuote('carousel_' + inner.id.toString().slice(1,-1));
-			
+			addClassName(scroller,'scroller');
  			var w = parseInt(GetCSSAttribute(thisItem,'width'));
 			SetCSSAttribute(thisItem,'overflow','hidden');
-			scroller['class'] = fwQuote('scroller');
+			addClassName(inner,'section');
+			SetCSSAttribute(inner,'float',null);
 			var dummy = thisItem.fwAddEnclosing("",true);
 			var panes = fwPage.fwFindAllActions(2,'Carousel Pane');
 			for (var i in panes){
@@ -618,9 +619,8 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 					var p = fwDocument.fwTags.fwFind("div", panes[i].fwItem);
 					if(p.fwNext == "fwwritelnopt")
 						p.fwNext.fwDelete();
-					inner['class'] = fwQuote("section");
 					removePositioning(p);
-					p['class'] = fwQuote("section");
+					addClassName(p,'section');
 					scroller.fwMove(p);
 					scroller.fwAddRawln('');
 				}
