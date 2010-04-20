@@ -33,7 +33,7 @@
 	var hasClassName = function(element, className) {
 		className = fwQuote(className,'','"'); //"
 		var elementClassName = (element["class"]) ? fwQuote(element["class"],'','"') : ''; //"
-		return (elementClassName.length > 0 && (elementClassName == className || new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
+		return ((elementClassName.length > 0) && (elementClassName == className || new RegExp("\\b" + className + "\\b").test(elementClassName)));
 	};
 
 	var addClassName = function(element, className) {
@@ -488,7 +488,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.3">
+<action-version version="1.2.4">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -497,7 +497,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 
 </action-version>
 <action-markup custom name="glide">Event.observe(window,'load',function(){
-	var select = (window.location.href.indexOf('?') > -1) ? window.location.href.split('?')[1] : '';
+	var select = (window.location.href.indexOf('?') > -1) ? window.location.href.split('?')[1] : $(__glideObject__).down('div.section').id;
     var my_glider = new Glider(__glideObject__, {duration:__duration____glideInterval__, initialSection: select});
     $$('.__glideClass__.next').each(function(elm){
     	    elm.observe('click',function(evt){
@@ -607,6 +607,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 			SetCSSAttribute(thisItem,'width',originalWidth);
 			removePositioning(inner);
 			thisItem.id = fwQuote('carousel_' + inner.id.toString().slice(1,-1));
+			
  			var w = parseInt(GetCSSAttribute(thisItem,'width'));
 			SetCSSAttribute(thisItem,'overflow','hidden');
 			scroller['class'] = fwQuote('scroller');
@@ -631,9 +632,9 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 				var cssStyles = myHead.fwAddCSSStyles();
 				var theId = thisItem.id.toString().slice(1,-1);
 				cssStyles.fwAddRawln("#" + theId + " div.scroller { overflow:hidden }");
-				if(fwParameters['axis'] == 'horizontal') cssStyles.fwAddRawln("#" + theId + " div.scroller div.section { overflow:hidden; float:left; height:" + GetCSSAttribute(inner,"height") + "; width:" + GetCSSAttribute(inner,"width") + " }");
-				if(fwParameters['axis'] == 'vertical') cssStyles.fwAddRawln("#" + theId + " div.scroller div.section { overflow:hidden; height:" + GetCSSAttribute(inner,"height") + "; width:" + GetCSSAttribute(inner,"width") + " }");
-				if(fwParameters['axis'] == 'horizontal') cssStyles.fwAddRawln("#" + theId + " div.scroller { width:" + scrollWidth + "; height:" + GetCSSAttribute(inner,"height") + " }");
+				if(fwParameters['axis'] == 'horizontal') cssStyles.fwAddRawln("#" + theId + " div.scroller div.section { overflow:hidden; float:left; height:" + originalHeight + "; width:" + originalWidth + " }");
+				if(fwParameters['axis'] == 'vertical') cssStyles.fwAddRawln("#" + theId + " div.scroller div.section { overflow:hidden; height:" + originalHeight + "; width:" + originalWidth + " }");
+				if(fwParameters['axis'] == 'horizontal') cssStyles.fwAddRawln("#" + theId + " div.scroller { width:" + scrollWidth + "; height:" + originalHeight + " }");
 			}
 		}
 	}

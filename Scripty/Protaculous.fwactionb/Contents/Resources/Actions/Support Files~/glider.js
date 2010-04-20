@@ -47,7 +47,7 @@ Object.extend(Object.extend(Glider.prototype, Abstract.prototype), {
 	
   addObservers: function() {
 		var obj = this;                      
-		this.controls = $$('div.controls a').findAll(function(elm){ 
+		this.controls = $$('.controls a').findAll(function(elm){ 
 			return obj.wrapper.select('div.section').find(function(e){ 
 				return e.id == elm.href.split('#')[1]
 			})

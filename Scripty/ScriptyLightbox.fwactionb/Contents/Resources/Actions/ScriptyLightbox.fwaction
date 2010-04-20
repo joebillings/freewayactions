@@ -119,6 +119,15 @@
 		scriptTag.fwAddRawOpt();
 		theTag.fwAddRawOpt();
 	}
+	function LinkStylesheetToHead(theTag, file){
+		var scriptTag = theTag.fwAdd("link");
+		scriptTag.href = fwQuote(file);
+		scriptTag.type = fwQuote("text/css");
+		scriptTag.rel = fwQuote("stylesheet");
+		scriptTag.fwAddRawOpt();
+		theTag.fwAddRawOpt();
+	}
+	
 	
 	function LinkRemoteFileToHead(theTag, file){
 		var path = "http://ajax.googleapis.com/ajax/libs/"
@@ -241,9 +250,9 @@
 </library-action>
 
 <item-action name="ScriptyLightbox">
-<action-version version="0.3.2">
+<action-version version="0.3.3">
 ScriptyLightbox Action
-Walter Davis Studio 2009
+Walter Davis Studio 2009, 2010
 </action-version>
 <action-text name="mediaWidth" title="Media Width" />
 <action-text name="mediaHeight" title="Media Height" />
@@ -348,6 +357,35 @@ Walter Davis Studio 2009
 		return element['class'] = fwQuote(elementClassName);
 	};
 	
+	function ReplaceStrings(item, findReplace){
+		var theHead = fwDocument.fwTags.fwFind("head");
+		var replacements = findReplace || {};
+		var path = this.fwPathName;
+		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
+		myFile = new FWFile;
+		myFile.fwOpenRead(prefix + item + '.js');
+		var outFile = new FWFile;
+		outFile.fwOpenWrite(item + '.js',true,'TEXT');
+		var str = myFile.fwReadString(myFile.fwAvailable);
+		
+		for(var i in replacements){
+			var re = new RegExp(i,'g');
+			str = str.replace(re,replacements[i]);
+		}
+		outFile.fwWrite(str);
+		outFile.fwClose();
+		myFile.fwClose();
+		if (fwParameters[item]) {
+			fwParameters[item].fwSpecify(outFile);
+			var path = fwParameters[item].toString();
+			fwPage.libsList[item] = path;
+		}else{
+			alert (item + '.js was not found in the action bundle');
+		}
+		if(lastOrders()){
+			LinkFileToHead(theHead, fwPage.libsList[item]);
+		}
+	}
 	function fwAfterStartHead()
 	{
 		AddImages();
@@ -364,7 +402,8 @@ Walter Davis Studio 2009
 		}else{
 			mediaHeight = "this._getParameter('lightwindow_height')";
 		}
-		AddFiles('prototype1610packer,scriptaculous183packer,lightwindow',true,{'RESOURCES':resources,'mediaWidth':mediaWidth,'mediaHeight':mediaHeight});
+		AddFiles('prototype1610packer,scriptaculous183packer');
+		ReplaceStrings('lightwindow',{'RESOURCES':resources,'mediaWidth':mediaWidth,'mediaHeight':mediaHeight})
 		var theHead = fwDocument.fwTags.fwFind("head");
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
@@ -383,7 +422,7 @@ Walter Davis Studio 2009
 		}else{
 			alert ('lightwindow.css was not found in the action bundle');
 		}
-		LinkFileToHead(theHead, fwParameters['lightwindowcss'].fwValue, {'rel':'stylesheet','type':'text/css', 'charset':'utf-8', 'media':'screen'});
+		LinkStylesheetToHead(theHead, fwParameters['lightwindowcss'].fwValue);
 		//AddFiles('_index',false);
 		//alert(fwItem.scriptCreated);
 	}
