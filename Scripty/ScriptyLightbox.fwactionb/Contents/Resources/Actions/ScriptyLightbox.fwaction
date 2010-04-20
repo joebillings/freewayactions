@@ -250,7 +250,7 @@
 </library-action>
 
 <item-action name="ScriptyLightbox">
-<action-version version="0.3.3">
+<action-version version="0.3.4">
 ScriptyLightbox Action
 Walter Davis Studio 2009, 2010
 </action-version>
@@ -337,7 +337,7 @@ Walter Davis Studio 2009, 2010
 	var hasClassName = function(element, className) {
 		className = fwQuote(className,'','"'); //"
 		var elementClassName = (element["class"]) ? fwQuote(element["class"],'','"') : ''; //"
-		return (elementClassName.length > 0 && (elementClassName == className || new RegExp("(^|\\s)" + className + "(\\s|$)").test(elementClassName)));
+		return ((elementClassName.length > 0) && (elementClassName == className || new RegExp("\\b" + className + "\\b").test(elementClassName)));
 	};
 
 	var addClassName = function(element, className) {
