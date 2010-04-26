@@ -767,15 +767,15 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 </action-javascript>
 </item-action>
 
-<action name="Carousel Text Tab">
-<action-version version="0.2.3">
+<action name="Carousel Text Tab" preview-text="&Text;" generates-link height=12>
+<action-version version="0.2.4">
 Carousel Text Tab
 (c)2009 - 2010 Walter Lee Davis
 
 Use this Action inline to create direct text navigation links to one of the Carousel options.
 
 </action-version>
-<action-text name="Text"   script default="link text"/>
+<action-text name="Text" script default="link text"/>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
@@ -807,9 +807,8 @@ Use this Action inline to create direct text navigation links to one of the Caro
 	}
 		
 	function fwAfterEndHTML(){
-		var enclosingTag = fwDocument.fwTags.fwFind("", fwItem);
-		if (enclosingTag)
-		{
+		var enclosingTag = fwDocument.fwTags.fwFind("",fwItem);
+		if (enclosingTag){
 			var href = enclosingTag.fwFindEnclosing("a");
 			if (!href)
 				href = enclosingTag.fwFind("a", fwItem);
@@ -818,6 +817,8 @@ Use this Action inline to create direct text navigation links to one of the Caro
 				href = enclosingTag.fwAdd("a", true);
 				href.href = fwQuote('#' + fwParameters['targets'].fwValue);
 			}
+			else
+				href.href = fwQuote('#' + fwParameters['targets'].fwValue);
 
 			href.fwAddRaw(fwEncode(fwParameters.Text, fwPage));
 		}
@@ -825,19 +826,14 @@ Use this Action inline to create direct text navigation links to one of the Caro
 		if(!parent || parent.id == '"PageDiv"'){
 			if(href.fwFindEnclosing('p')){
 				parent = href.fwFindEnclosing('p');
-				if(! parent['class'] || parent['class'].fwValue.indexOf('controls') < 0){
-					if(parent['class'] && parent['class'].fwValue != ''){
-						parent['class'] =  fwQuote(parent['class'].fwValue.slice(1,-1) + ' controls');
-					}else{
-						parent['class'] = fwQuote('controls');
-					}
-				}
+			}else
+			if(href.fwFindEnclosing('ul')){
+				parent = href.fwFindEnclosing('ul');
 			}else{
-				parent = href.fwAddEnclosing('div',true);
+				parent = href.fwAddEnclosing('p',true);
 			}
-		}else{
-			parent['class'] = fwQuote('controls');
 		}
+		addClassName(parent,'controls')
 		if(href && (!href.id)){
 			href.id = fwQuote('text_tab_' + fwParameters['targets'].fwValue);
 		}
@@ -848,7 +844,7 @@ Use this Action inline to create direct text navigation links to one of the Caro
 </action-javascript>
 </action>
 
-<item-action name="Carousel Tab">
+<item-action name="Carousel Tab" generates-link>
 <action-appliesto graphic pass-through/>
 <action-version version="0.7.3">
 Carousel Tab
@@ -887,7 +883,7 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 		}
 	}
 		
-	function fwAfterEndHTML(){
+	function fwAfterEndBody(){
 		var thisImg = fwDocument.fwTags.fwFind("img",fwItem);
 		if(thisImg){
 			var thisItem = thisImg.fwFindEnclosing("a");
