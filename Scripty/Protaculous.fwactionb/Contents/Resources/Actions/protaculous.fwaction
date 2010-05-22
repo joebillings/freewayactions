@@ -488,7 +488,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.5">
+<action-version version="1.2.6">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -603,6 +603,8 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 			inner.id = thisItem.id;
 			inner.style = thisItem.style;
 			SetCSSAttribute(thisItem,'border',null);
+			SetCSSAttribute(thisItem,'margin',null);
+			SetCSSAttribute(thisItem,'padding',null);
 			SetCSSAttribute(thisItem,'height',originalHeight);
 			SetCSSAttribute(thisItem,'width',originalWidth);
 			removePositioning(inner);
@@ -821,6 +823,7 @@ Use this Action inline to create direct text navigation links to one of the Caro
 				href.href = fwQuote('#' + fwParameters['targets'].fwValue);
 
 			href.fwAddRaw(fwEncode(fwParameters.Text, fwPage));
+			SetCSSAttribute(href,'cursor','pointer');
 		}
 		var parent = href.fwFindEnclosing('div');
 		if(!parent || parent.id == '"PageDiv"'){
