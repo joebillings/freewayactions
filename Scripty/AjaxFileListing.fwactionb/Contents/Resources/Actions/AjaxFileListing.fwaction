@@ -110,16 +110,21 @@
 	
 	function AddFiles(filesString){
 		var theHead = fwDocument.fwTags.fwFind("head");
-		var connected = function(){
+		var connected = (function(){
 			if(fwShellCommand) {
-				return fwShellCommand('ping -c1 -i1 http://ajax.googleapis.com');
+				return fwShellCommand('ping -t3 -o ajax.googleapis.com').match("1 packets received");
 			}else{
 				var osa=new FWOSAInterpreter; 
-				osa.fwWrite('do shell script "curl ajax.googleapis.com"'); 
+				osa.fwWrite('try\n' + 
+   				'do shell script "ping -t3 -o ajax.googleapis.com"\n' +
+   				'return 1\n' +
+					'on error\n' +
+     				'return 0\n' +
+ 					'end try');
 				osa.fwCompile(); 
 				return osa.fwRun();
 			}
-		}
+		})();
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
@@ -161,7 +166,7 @@
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
 					var file = fwPage.libsList[canon[i]];
-					connected() ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
+					connected ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
 					delete fwPage.libsList[canon[i]];
 				}
 			}
