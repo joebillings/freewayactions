@@ -246,7 +246,7 @@
 </library-action>
 
 <action name="AjaxFileListing" height="12">
-<action-version version="0.4.2">
+<action-version version="0.4.3">
 AjaxFileListing Action
 Walter Davis Studio 2008 - 2010
 </action-version>

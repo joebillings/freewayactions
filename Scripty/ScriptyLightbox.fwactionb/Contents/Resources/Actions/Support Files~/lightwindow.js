@@ -98,6 +98,7 @@ lightwindow.prototype = {
 				aiff : 'audio/aiff',
 				gif : 'image/gif',
 				bmp : 'image/bmp',
+				jpg : 'image/jpeg',
 				jpeg : 'image/jpeg',
 				m1v : 'video/mpeg',
 				m2a : 'audio/mpeg',

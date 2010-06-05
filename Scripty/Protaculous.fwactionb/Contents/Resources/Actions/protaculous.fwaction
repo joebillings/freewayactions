@@ -131,16 +131,21 @@
 	
 	function AddFiles(filesString){
 		var theHead = fwDocument.fwTags.fwFind("head");
-		var connected = function(){
+		var connected = (function(){
 			if(fwShellCommand) {
-				return fwShellCommand('ping -c1 -i1 http://ajax.googleapis.com');
+				return fwShellCommand('ping -t3 -o ajax.googleapis.com').match("1 packets received");
 			}else{
 				var osa=new FWOSAInterpreter; 
-				osa.fwWrite('do shell script "curl ajax.googleapis.com"'); 
+				osa.fwWrite('try\n' + 
+   				'do shell script "ping -t3 -o ajax.googleapis.com"\n' +
+   				'return 1\n' +
+					'on error\n' +
+     				'return 0\n' +
+ 					'end try');
 				osa.fwCompile(); 
 				return osa.fwRun();
 			}
-		}
+		})();
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
@@ -182,7 +187,7 @@
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
 					var file = fwPage.libsList[canon[i]];
-					connected() ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
+					connected ? LinkRemoteFileToHead(theHead, file) : LinkFileToHead(theHead, file);
 					delete fwPage.libsList[canon[i]];
 				}
 			}
@@ -344,7 +349,7 @@
 </library-action>
 
 <page-action name="Protaculous">
-<action-version version="0.6.3">
+<action-version version="0.6.4">
 Protaculous Action
 Copyright (c) Walter Davis Studio 2007 - 2010
 </action-version>
@@ -414,7 +419,7 @@ Copyright (c) Walter Davis Studio 2007 - 2010
 
 
 <item-action name="Observer">
-<action-version version="0.2.3">
+<action-version version="0.2.4">
 Observer Action
 Copyright (c) Walter Davis Studio 2008 - 2010
 </action-version>
@@ -488,7 +493,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.6">
+<action-version version="1.2.7">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -645,7 +650,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 
 <item-action name="Carousel Pane">
 <action-appliesto layer non-html32/>
-<action-version version="0.3.3">
+<action-version version="0.3.4">
 Carousel Pane
 (c)2009 - 2010 Walter Lee Davis
 
@@ -697,7 +702,7 @@ Apply the action to any layer to designate a Carousel pane.
 
 <item-action name="Carousel Button">
 <action-appliesto graphic pass-through/>
-<action-version version="0.9.3">
+<action-version version="0.9.4">
 Carousel Button
 (c)2007 Walter Lee Davis
 
@@ -770,7 +775,7 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 </item-action>
 
 <action name="Carousel Text Tab" preview-text="&Text;" generates-link height=12>
-<action-version version="0.2.4">
+<action-version version="0.2.5">
 Carousel Text Tab
 (c)2009 - 2010 Walter Lee Davis
 
@@ -849,7 +854,7 @@ Use this Action inline to create direct text navigation links to one of the Caro
 
 <item-action name="Carousel Tab" generates-link>
 <action-appliesto graphic pass-through/>
-<action-version version="0.7.3">
+<action-version version="0.7.4">
 Carousel Tab
 (c)2007 - 2010 Walter Lee Davis
 
