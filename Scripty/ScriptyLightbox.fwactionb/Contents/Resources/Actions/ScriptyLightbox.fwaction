@@ -120,12 +120,16 @@
 		theTag.fwAddRawOpt();
 	}
 	function LinkStylesheetToHead(theTag, file){
-		var scriptTag = theTag.fwAdd("link");
-		scriptTag.href = fwQuote(file);
-		scriptTag.type = fwQuote("text/css");
-		scriptTag.rel = fwQuote("stylesheet");
-		scriptTag.fwAddRawOpt();
-		theTag.fwAddRawOpt();
+		if(!fwPage.cssList) fwPage['cssList'] = {};
+		if(!fwPage.cssList[file]){
+			var scriptTag = theTag.fwAdd("link");
+			scriptTag.href = fwQuote(file);
+			scriptTag.type = fwQuote("text/css");
+			scriptTag.rel = fwQuote("stylesheet");
+			scriptTag.fwAddRawOpt();
+			theTag.fwAddRawOpt();
+			fwPage.cssList[file] = file;
+		}
 	}
 	
 	
@@ -163,7 +167,7 @@
 		var files = (useCustom) ? filesString.split(',') : canon;
 
 		if(!fwPage.libsList)
-			fwPage.libsList = new Object();
+			fwPage['libsList'] = new Object();
 
 		for (i in files){
 			var file = files[i];
@@ -255,7 +259,7 @@
 </library-action>
 
 <item-action name="ScriptyLightbox">
-<action-version version="0.3.6">
+<action-version version="0.3.8">
 ScriptyLightbox Action
 Walter Davis Studio 2009, 2010
 </action-version>
@@ -280,7 +284,7 @@ Walter Davis Studio 2009, 2010
 	var resources = '';
 
 	function fwInterface(){
-		fwPage.libsList = new Object();
+		fwPage['libsList'] = new Object();
 	}
 	
 	var images = {'ajaxloading':'ajax-loading.gif',
@@ -363,6 +367,8 @@ Walter Davis Studio 2009, 2010
 	};
 	
 	function ReplaceStrings(item, findReplace){
+		if(!fwPage.libsList)
+			fwPage['libsList'] = new Object();
 		var theHead = fwDocument.fwTags.fwFind("head");
 		var replacements = findReplace || {};
 		var path = this.fwPathName;
@@ -387,9 +393,6 @@ Walter Davis Studio 2009, 2010
 		}else{
 			alert (item + '.js was not found in the action bundle');
 		}
-		if(lastOrders()){
-			LinkFileToHead(theHead, fwPage.libsList[item]);
-		}
 	}
 	function fwAfterStartHead()
 	{
@@ -407,7 +410,6 @@ Walter Davis Studio 2009, 2010
 		}else{
 			mediaHeight = "this._getParameter('lightwindow_height')";
 		}
-		AddFiles('prototype1602packer,scriptaculous181packer');
 		ReplaceStrings('lightwindow',{'RESOURCES':resources,'mediaWidth':mediaWidth,'mediaHeight':mediaHeight})
 		var theHead = fwDocument.fwTags.fwFind("head");
 		var path = this.fwPathName;
@@ -430,6 +432,8 @@ Walter Davis Studio 2009, 2010
 		LinkStylesheetToHead(theHead, fwParameters['lightwindowcss'].fwValue);
 		//AddFiles('_index',false);
 		//alert(fwItem.scriptCreated);
+		AddFiles('prototype1602packer,scriptaculous181packer');
+
 	}
 	function fwAfterEndHTML(){
 		var box = fwDocument.fwTags.fwFind(fwItem);

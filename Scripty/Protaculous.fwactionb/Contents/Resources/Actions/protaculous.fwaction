@@ -493,7 +493,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.7">
+<action-version version="1.2.8">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -503,19 +503,20 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 </action-version>
 <action-markup custom name="glide">Event.observe(window,'load',function(){
 	var select = (window.location.href.indexOf('?') > -1) ? window.location.href.split('?')[1] : '';
-    var my_glider = new Glider(__glideObject__, {duration:__duration____glideInterval__, initialSection: select});
-    $$('.__glideClass__.next').each(function(elm){
-    	    elm.observe('click',function(evt){
-    		Event.stop(evt);
-    		return my_glider.next();
-    	});
-    });
-    $$('.__glideClass__.previous').each(function(elm){
-    	    elm.observe('click',function(evt){
-    		Event.stop(evt);
-    		return my_glider.previous();
-    	});
-    });
+	if(!$(select)) select = '';
+	var my_glider = new Glider(__glideObject__, {duration:__duration____glideInterval__, initialSection: select});
+	$$('.__glideClass__.next').each(function(elm){
+		elm.observe('click',function(evt){
+			Event.stop(evt);
+			return my_glider.next();
+		});
+	});
+	$$('.__glideClass__.previous').each(function(elm){
+		elm.observe('click',function(evt){
+			Event.stop(evt);
+			return my_glider.previous();
+		});
+	});
 });
 </action-markup>
 <action-file name ="prototype1602packer" var/>
