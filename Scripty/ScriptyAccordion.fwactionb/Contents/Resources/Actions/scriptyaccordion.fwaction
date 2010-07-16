@@ -189,7 +189,7 @@
 					out.push(pairs[i]);
 				}
 			}
-			tag['style']= fwQuote(out.join('; ')); 
+			tag['style'] = fwQuote(out.join('; '));
 		}
 	} 
 	function GetCSSAttribute(tag, attributeName) { 
@@ -218,7 +218,7 @@
 </library-action>
 
 <item-action name="ScriptyAccordion">
-<action-version version="0.6.3">
+<action-version version="0.6.4">
 ScriptyAccordion Action
 Walter Davis Studio 2008, 2009, 2010
 </action-version>
@@ -386,15 +386,16 @@ Effect.BlindRight = function(element) {
 			var thisItem = fwDocument.fwTags.fwFind(fwItem);
 			var inlines = thisItem.fwFindAll(['div','img']);
 			for (i in inlines){
-				if(inlines[i].fwFindEnclosing('p')){
-					var p = inlines[i].fwFindEnclosing('p');
+				var inline = inlines[i];
+				SetCSSAttribute(inline,'float','left');
+				SetCSSAttribute(inline,'vertical-align','top');
+				if(inline.fwFindEnclosing('p')){
+					var p = inline.fwFindEnclosing('p');
 					var d = p.fwAddEnclosing('',false);
 					var c = p.fwFindAllContent();
 					d.fwMove(c);
 					p.fwDelete();
-					SetCSSAttribute(inlines[i],'vertical-align','top');
 				}
-				SetCSSAttribute(inlines[i],'float','left');
 			}
 		}
 		observerScript.fwConvertLineEndings = true;
