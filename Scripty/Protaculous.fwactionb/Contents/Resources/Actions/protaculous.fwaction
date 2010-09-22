@@ -123,7 +123,10 @@
 	function LinkRemoteFileToHead(theTag, file){
 		var path = "http://ajax.googleapis.com/ajax/libs/"
 		var scriptTag = theTag.fwAdd("script", true);
-		scriptTag.src = fwQuote(path + (file.match("pro") ? "prototype/1.6.1.0/prototype.js" : "scriptaculous/1.8.3/scriptaculous.js"));
+		if(parseFloat(fwFreewayVersion) >= 5.5)
+			scriptTag.src = fwQuote(path + (file.match("pro") ? "prototype/1.6.1.0/prototype.js" : "scriptaculous/1.8.3/scriptaculous.js"));
+		else
+			scriptTag.src = fwQuote(path + (file.match("pro") ? "prototype/1.6.0.2/prototype.js" : "scriptaculous/1.8.1/scriptaculous.js"));
 		scriptTag.type = fwQuote("text/javascript");
 		scriptTag.fwAddRawOpt();
 		theTag.fwAddRawOpt();
@@ -149,7 +152,10 @@
 		var useCustom = filesString && filesString.length > 0;
 		var path = this.fwPathName;
 		var prefix = path.substring(0, path.lastIndexOf(":")) + ':Support Files~:';
-		var canon = 'prototype1602packer,prototype1602,scriptaculous181packer,scriptaculous181'.split(',');
+		if(parseFloat(fwFreewayVersion) >= 5.5)
+			var canon = 'prototype1610packer,prototype1610,scriptaculous183packer,scriptaculous183'.split(',');
+		else
+			var canon = 'prototype1602packer,prototype1602,scriptaculous181packer,scriptaculous181'.split(',');
 		
 		var files = (useCustom) ? filesString.split(',') : canon;
 
@@ -178,11 +184,19 @@
 		}
 
 		if(lastOrders()){
-			if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602'])
-				fwPage.libsList['prototype1602packer'] = null;
-
-			if(fwPage.libsList['scriptaculous181packer'] && fwPage.libsList['scriptaculous181'])
-				fwPage.libsList['scriptaculous181packer'] = null;
+			if(parseFloat(fwFreewayVersion) >= 5.5) {
+				if(fwPage.libsList['prototype1610packer'] && fwPage.libsList['prototype1610'])
+					fwPage.libsList['prototype1610packer'] = null;
+	
+				if(fwPage.libsList['scriptaculous183packer'] && fwPage.libsList['scriptaculous183'])
+					fwPage.libsList['scriptaculous183packer'] = null;
+			} else {
+				if(fwPage.libsList['prototype1602packer'] && fwPage.libsList['prototype1602'])
+					fwPage.libsList['prototype1602packer'] = null;
+	
+				if(fwPage.libsList['scriptaculous181packer'] && fwPage.libsList['scriptaculous181'])
+					fwPage.libsList['scriptaculous181packer'] = null;
+			}
 
 			for (i in canon){
 				if (fwPage.libsList[canon[i]]){
@@ -349,10 +363,14 @@
 </library-action>
 
 <page-action name="Protaculous">
-<action-version version="0.6.4">
+<action-version version="0.6.5">
 Protaculous Action
 Copyright (c) Walter Davis Studio 2007 - 2010
 </action-version>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -380,7 +398,7 @@ Copyright (c) Walter Davis Studio 2007 - 2010
 <action-include name="scriptyHandlerFunctions">
 	function EditCode(codeName){ //Cut down from Tim Plumb's Source Code Snooper
 		var mycustomcode = fwParameters[codeName].toString();
-		var myprompt = "This code will be executed when the window finishes loading.";
+		var myprompt = "Add your code here";
 		var mycustomcodeprompt = fwBigPrompt(myprompt, mycustomcode);
 		if (mycustomcodeprompt != null) { //if the cancel button was not hit
 			if (mycustomcodeprompt != mycustomcode) {//check that the code has changed
@@ -396,16 +414,28 @@ Copyright (c) Walter Davis Studio 2007 - 2010
 	{
 		var filesString = '';
 		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
-			filesString = 'prototype1602packer,scriptaculous181packer';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610packer,scriptaculous183packer';
+			else
+				filesString = 'prototype1602packer,scriptaculous181packer';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype-packed'){
-			filesString = 'prototype1602packer';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610packer';
+			else
+				filesString = 'prototype1602packer';
 		}
 		if(fwParameters['lib'].fwValue == 'scriptaculous'){
-			filesString = 'prototype1602,scriptaculous181';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610,scriptaculous183';
+			else
+				filesString = 'prototype1602,scriptaculous181';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype'){
-			filesString = 'prototype1602';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610';
+			else
+				filesString = 'prototype1602';
 		}
 		AddFiles(filesString);
 	}
@@ -417,12 +447,99 @@ Copyright (c) Walter Davis Studio 2007 - 2010
 </action-javascript>
 </page-action>
 
+<action name="Protaculous">
+<action-version version="0.6.5">
+Protaculous Action
+Copyright (c) Walter Davis Studio 2007 - 2010
+</action-version>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
+<action-file name ="prototype1602packer" var/>
+<action-file name ="scriptaculous181packer" var/>
+<action-file name ="prototype1602" var/>
+<action-file name ="scriptaculous181" var/><action-popup name="lib" title="Use Library">
+<value name="prototype">
+<value name="prototype-packed">
+<value name="scriptaculous">
+<value name="scriptaculous-packed">
+</action-popup>
+<action-text var name="domloaded" default="">
+<action-text var name="windowLoad" default="">
+<action-label name="divider1" title="-"/>
+<action-label name="window" title="document.observe('dom:loaded', function(){"/>
+<action-label name="comment1" title="//functions placed in this block will execute as soon as the DOM is ready"/>
+<action-button name="function1" title="Function Body" onClick=EditCode('domloaded');>
+<action-label name="window2" title="});"/>
+<action-label name="divider2" title="-"/>
+<action-label name="window3" title="Event.observe(window, 'load', function(){"/>
+<action-label name="comment2" title="//functions placed in this block will execute after the page is completely loaded"/>
+<action-button name="function2" title="Function Body" onClick=EditCode('windowLoad');>
+<action-label name="window4" title="});"/>
+
+<action-javascript>
+<action-include name="scriptyHandlerFunctions">
+	function EditCode(codeName){ //Cut down from Tim Plumb's Source Code Snooper
+		var mycustomcode = fwParameters[codeName].toString();
+		var myprompt = "Add your code here";
+		var mycustomcodeprompt = fwBigPrompt(myprompt, mycustomcode);
+		if (mycustomcodeprompt != null) { //if the cancel button was not hit
+			if (mycustomcodeprompt != mycustomcode) {//check that the code has changed
+				fwParameters[codeName].fwValue = mycustomcodeprompt;
+			}
+		}
+	}
+	function fwInterface(){
+		fwPage.libsList = new Object();
+	}	
+	
+	function fwAfterStartHead()
+	{
+		var filesString = '';
+		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610packer,scriptaculous183packer';
+			else
+				filesString = 'prototype1602packer,scriptaculous181packer';
+		}
+		if(fwParameters['lib'].fwValue == 'prototype-packed'){
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610packer';
+			else
+				filesString = 'prototype1602packer';
+		}
+		if(fwParameters['lib'].fwValue == 'scriptaculous'){
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610,scriptaculous183';
+			else
+				filesString = 'prototype1602,scriptaculous181';
+		}
+		if(fwParameters['lib'].fwValue == 'prototype'){
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610';
+			else
+				filesString = 'prototype1602';
+		}
+		AddFiles(filesString);
+	}
+	function fwBeforeEndHead(){
+		if(fwParameters['domloaded'] && fwParameters['domloaded'] != '') AddObserver(fwDocument.fwTags.fwFind("head"), 'domloaded', 'document','dom:loaded');
+		if(fwParameters['windowLoad'] && fwParameters['windowLoad'] != '') AddEventObserver(fwDocument.fwTags.fwFind("head"), 'windowLoad', 'window','load');
+	}
+	
+</action-javascript>
+</action>
 
 <item-action name="Observer">
-<action-version version="0.2.4">
+<action-version version="0.2.5">
 Observer Action
 Copyright (c) Walter Davis Studio 2008 - 2010
 </action-version>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -466,16 +583,28 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 	{
 		var filesString = '';
 		if(fwParameters['lib'].fwValue == 'scriptaculous-packed'){
-			filesString = 'prototype1602packer,scriptaculous181packer';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610packer,scriptaculous183packer';
+			else
+				filesString = 'prototype1602packer,scriptaculous181packer';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype-packed'){
-			filesString = 'prototype1602packer';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610packer';
+			else
+				filesString = 'prototype1602packer';
 		}
 		if(fwParameters['lib'].fwValue == 'scriptaculous'){
-			filesString = 'prototype1602,scriptaculous181';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610,scriptaculous183';
+			else
+				filesString = 'prototype1602,scriptaculous181';
 		}
 		if(fwParameters['lib'].fwValue == 'prototype'){
-			filesString = 'prototype1602';
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				filesString = 'prototype1610';
+			else
+				filesString = 'prototype1602';
 		}
 		AddFiles(filesString);
 	}
@@ -493,7 +622,7 @@ Copyright (c) Walter Davis Studio 2008 - 2010
 
 <item-action name="Carousel">
 <action-appliesto non-html32/>
-<action-version version="1.2.8">
+<action-version version="1.2.10">
 Carousel
 Action (c)2007-10 Walter Lee Davis, big help from Joe Billings in March 2010.
 Glider.js (c)2007 Curbly LLC - author Bruno Bornsztein <bruno@missingmethod.com>
@@ -502,7 +631,11 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 
 </action-version>
 <action-markup custom name="glide">Event.observe(window,'load',function(){
-	var select = (window.location.href.indexOf('?') > -1) ? window.location.href.split('?')[1] : '';
+	var select = '';
+	if (window.location.href.indexOf('?') > -1){
+		var test = window.location.href.split('?')[1];
+		select = ($(test)) ? test : '';
+	}
 	if(!$(select)) select = '';
 	var my_glider = new Glider(__glideObject__, {duration:__duration____glideInterval__, initialSection: select});
 	$$('.__glideClass__.next').each(function(elm){
@@ -519,6 +652,10 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 	});
 });
 </action-markup>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -563,7 +700,17 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 		theTag.fwAddRawln('');
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		if(debug) {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610,scriptaculous183,glider')
+			else
+				AddFiles('prototype1602,scriptaculous181,glider')
+		} else {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610packer,scriptaculous183packer,glider');
+			else
+				AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		}
 	}
 	function clonePosition(target,source){
 		pos = ['top','left','bottom','right','z-index','position'];
@@ -651,7 +798,7 @@ Apply the action to a group of HTML items to turn them into a smooth-scrolling c
 
 <item-action name="Carousel Pane">
 <action-appliesto layer non-html32/>
-<action-version version="0.3.4">
+<action-version version="0.3.5">
 Carousel Pane
 (c)2009 - 2010 Walter Lee Davis
 
@@ -659,6 +806,10 @@ Apply the action to any layer to designate a Carousel pane.
 
 </action-version>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -687,7 +838,17 @@ Apply the action to any layer to designate a Carousel pane.
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		if(debug) {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610,scriptaculous183,glider')
+			else
+				AddFiles('prototype1602,scriptaculous181,glider')
+		} else {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610packer,scriptaculous183packer,glider');
+			else
+				AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		}
 	}
 	function fwBeforeEndBody(){
 		// Loop through all children and apply the removeFromRelativeLayout flag to them
@@ -703,7 +864,7 @@ Apply the action to any layer to designate a Carousel pane.
 
 <item-action name="Carousel Button">
 <action-appliesto graphic pass-through/>
-<action-version version="0.9.4">
+<action-version version="0.9.5">
 Carousel Button
 (c)2007 Walter Lee Davis
 
@@ -715,6 +876,10 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 <value name="previous">
 <value name="next">
 </action-popup>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -770,13 +935,23 @@ Apply the action to any linked (or linkable) graphic to create scroll buttons fo
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		if(debug) {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610,scriptaculous183,glider')
+			else
+				AddFiles('prototype1602,scriptaculous181,glider')
+		} else {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610packer,scriptaculous183packer,glider');
+			else
+				AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		}
 	}
 </action-javascript>
 </item-action>
 
 <action name="Carousel Text Tab" preview-text="&Text;" generates-link height=12>
-<action-version version="0.2.5">
+<action-version version="0.2.6">
 Carousel Text Tab
 (c)2009 - 2010 Walter Lee Davis
 
@@ -785,6 +960,10 @@ Use this Action inline to create direct text navigation links to one of the Caro
 </action-version>
 <action-text name="Text" script default="link text"/>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -848,14 +1027,24 @@ Use this Action inline to create direct text navigation links to one of the Caro
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		if(debug) {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610,scriptaculous183,glider')
+			else
+				AddFiles('prototype1602,scriptaculous181,glider')
+		} else {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610packer,scriptaculous183packer,glider');
+			else
+				AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		}
 	}
 </action-javascript>
 </action>
 
 <item-action name="Carousel Tab" generates-link>
 <action-appliesto graphic pass-through/>
-<action-version version="0.7.4">
+<action-version version="0.7.5">
 Carousel Tab
 (c)2007 - 2010 Walter Lee Davis
 
@@ -863,6 +1052,10 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 
 </action-version>
 <action-itemref name="targets" title="Target" filter="activeTarget"/>
+<action-file name ="prototype1610packer" var/>
+<action-file name ="scriptaculous183packer" var/>
+<action-file name ="prototype1610" var/>
+<action-file name ="scriptaculous183" var/>
 <action-file name ="prototype1602packer" var/>
 <action-file name ="scriptaculous181packer" var/>
 <action-file name ="prototype1602" var/>
@@ -917,7 +1110,17 @@ Apply the action to any graphic to create direct navigation to one of the Carous
 		}
 	}
 	function fwAfterStartHead(){
-		(debug) ? AddFiles('prototype1602,scriptaculous181,glider') : AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		if(debug) {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610,scriptaculous183,glider')
+			else
+				AddFiles('prototype1602,scriptaculous181,glider')
+		} else {
+			if(parseFloat(fwFreewayVersion) >= 5.5)
+				AddFiles('prototype1610packer,scriptaculous183packer,glider');
+			else
+				AddFiles('prototype1602packer,scriptaculous181packer,glider');
+		}
 	}
 </action-javascript>
 </item-action>
